@@ -3,16 +3,11 @@ using DataFrames
 import CSV
 import HTTP
 using ProgressMeter
+include("download_metadata.jl")
 
 
 
-function download_filing(row, dest)
-    # check if file already has been downloaded
-    full_file = joinpath(dest, replace(row["Filename"], "edgar/data/" => ""))
-    if isfile(full_file)
-        return 
-    end
-
+function download_filing(row, full_file)
     # get filing from SEC
     full_url = "https://www.sec.gov/Archives/" * row["Filename"]
     text = HTTP.get(full_url).body
@@ -32,7 +27,7 @@ function download_filing(row, dest)
 end
 
 
-function download_quarterly_filings(metadata_file::String, dest="../data2/"::String)
+function download_quarterly_filings(metadata_file::String, dest="../data/"::String)
 
     println("Metadata: " * metadata_file)
     
@@ -43,23 +38,35 @@ function download_quarterly_filings(metadata_file::String, dest="../data2/"::Str
     if !isdir(dest)
         mkdir(dest)
     end
-
-    # download filings
-    println("Using " * string(Threads.nthreads()) * " threads to download " * string(size(df)[1]) * " files")
-    p = Progress(size(df)[1], 1, "Downloading...", 50)
-    Threads.@threads for row in eachrow(df)
-        download_filing(row, dest)
-        next!(p)
+    
+    # download filings at 10 requests per second
+    @showprogress 1 "Downloading Filings..." for row in eachrow(df)
+        
+        # check if filing already has been downloaded
+        full_file = joinpath(dest, replace(row["Filename"], "edgar/data/" => ""))
+        if isfile(full_file)
+            next 
+        end
+        
+        # download new filing
+        @async download_filing(row, full_file)
+        
+        # rest to throttle api hits to around 10/second
+        sleep(0.1)
     end
 
     return
 end
 
 
-#download_quarterly_filings("../metadata/2000-QTR2.tsv")
+
+download_quarterly_filings("../metadata/2000-QTR1.tsv")
+"""
 for year in 2008:2011
     for quarter in ["1", "2", "3", "4"]
         if year == 2003 && quarter == "1"; continue; end
         download_quarterly_filings("../metadata/"*string(year)*"-QTR"*quarter*".tsv")
     end
 end
+
+"""
