@@ -1,4 +1,5 @@
 # https://github.com/edgarminers/python-edgar
+# https://github.com/sec-edgar/sec-edgar
 
 import edgar
 
