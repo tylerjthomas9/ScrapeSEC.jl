@@ -83,7 +83,7 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
     if download_rate > 10
         download_rate = 10
         println("download_rate of more than 10 per second(", download_rate, ") is not valid. download_rate has been set to 10/second.")
-    else if download_rate < 1
+    elseif download_rate < 1
         download_rate = 1
         println("download_rate of less than 1 per second(", download_rate, ") is not valid. download_rate has been set to 1/second.")
     end
