@@ -27,8 +27,18 @@ function download_filing(row, full_file)
 end
 
 
-function download_quarterly_filings(metadata_file::String, dest="../data/"::String)
+function download_quarterly_filings(metadata_file::String, dest="../data/"::String; download_rate=10::Int)
 
+    # verify download_rate is valid (less than 10 requests per second, more than 0)
+    if download_rate > 10
+        download_rate = 10
+        println("download_rate of more than 10 per second(", download_rate, ") is not valid. download_rate has been set to 10/second.")
+    else if download_rate < 1
+        download_rate = 1
+        println("download_rate of less than 1 per second(", download_rate, ") is not valid. download_rate has been set to 1/second.")
+    end
+
+    
     println("Metadata: " * metadata_file)
     
     df = DataFrame(CSV.File(metadata_file, delim="|"))
