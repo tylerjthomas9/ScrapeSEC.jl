@@ -26,7 +26,7 @@ function download_filing(row, full_file)
 end
 
 
-function download_quarterly_filings(metadata_file::String, dest="../data/"::String; download_rate=10::Int)
+function get_quarterly_filings(metadata_file::String, dest="../data/"::String; download_rate=10::Int)
 
     # verify download_rate is valid (less than 10 requests per second, more than 0)
     if download_rate > 10
@@ -70,7 +70,7 @@ end
 
 
 
-download_quarterly_filings("../metadata/2000-QTR1.tsv")
+get_quarterly_filings("../metadata/2000-QTR1.tsv")
 """
 for year in 2008:2011
     for quarter in ["1", "2", "3", "4"]
