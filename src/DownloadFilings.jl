@@ -1,4 +1,3 @@
-using Distributed
 using DataFrames
 import CSV
 import HTTP
