@@ -38,7 +38,7 @@ function download_quarterly_filings(metadata_file::String, dest="../data/"::Stri
         println("download_rate of less than 1 per second(", download_rate, ") is not valid. download_rate has been set to 1/second.")
     end
 
-    
+
     println("Metadata: " * metadata_file)
     
     df = DataFrame(CSV.File(metadata_file, delim="|"))
@@ -50,6 +50,7 @@ function download_quarterly_filings(metadata_file::String, dest="../data/"::Stri
     end
     
     # download filings at 10 requests per second
+    sleep_time = 1 / download_rate 
     @showprogress 1 "Downloading Filings..." for row in eachrow(df)
         
         # check if filing already has been downloaded
@@ -62,7 +63,7 @@ function download_quarterly_filings(metadata_file::String, dest="../data/"::Stri
         @async download_filing(row, full_file)
         
         # rest to throttle api hits to around 10/second
-        sleep(0.1)
+        sleep(sleep_time)
     end
 
     return

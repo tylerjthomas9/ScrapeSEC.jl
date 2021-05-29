@@ -116,7 +116,7 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
     sleep_time = 1 / download_rate 
     @showprogress 1 "Downloading Metadata..." for idx in eachindex(urls)
         @async download_metadata(urls[idx], dest, temp_file, skip_file, verbose)
-        sleep()
+        sleep(sleep_time)
     end
 end
 
