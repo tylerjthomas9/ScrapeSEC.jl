@@ -75,7 +75,18 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
                         skip_file=false::Bool, 
                         dest="../metadata/"::String, 
                         temp_file="temp.zip"::String,
-                        verbose=false)
+                        verbose=false::Bool,
+                        download_rate=10::Int)
+
+
+    # verify download_rate is valid (less than 10 requests per second, more than 0)
+    if download_rate > 10
+        download_rate = 10
+        println("download_rate of more than 10 per second(", download_rate, ") is not valid. download_rate has been set to 10/second.")
+    else if download_rate < 1
+        download_rate = 1
+        println("download_rate of less than 1 per second(", download_rate, ") is not valid. download_rate has been set to 1/second.")
+    end
 
     # create download folder if needed
     println("Metadata Destination:  " * dest)
@@ -102,9 +113,10 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
     urls = get_metadata_urls(time_periods)
 
     # download metadata files at 10 requests per second
+    sleep_time = 1 / download_rate 
     @showprogress 1 "Downloading Metadata..." for idx in eachindex(urls)
         @async download_metadata(urls[idx], dest, temp_file, skip_file, verbose)
-        sleep(0.1)
+        sleep()
     end
 end
 
