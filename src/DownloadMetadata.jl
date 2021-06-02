@@ -39,7 +39,7 @@ function download_metadata(url::String, dest::String, temp_file::String, skip_fi
     if verbose; println(full_file); end
     
     # make unique temp file
-    temp_file = temp_file + split(full_file, "/")[end]
+    temp_file = temp_file * split(full_file, "/")[end][1:end-4] * ".zip"
 
     # check if we skip the download
     if isfile(full_file) & skip_file
@@ -74,7 +74,7 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
                         quarters=[1, 2, 3, 4]::Vector{Int64},
                         skip_file=false::Bool, 
                         dest="../metadata/"::String, 
-                        temp_file="temp.zip"::String,
+                        temp_file="temp_"::String,
                         verbose=false::Bool,
                         download_rate=10::Int)
 
@@ -120,9 +120,4 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
     end
 end
 
-
-if abspath(PROGRAM_FILE) == @__FILE__
-    get_metadata(1993)
-end
-
-#df = DataFrame(CSV.File("../data/2021-QTR1.tsv", delim="|"))
+get_metadata(1993, 1993)
