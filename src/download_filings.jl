@@ -2,7 +2,7 @@ using DataFrames
 import CSV
 import HTTP
 using ProgressMeter
-include("DownloadMetadata.jl")
+include("download_metadata.jl")
 
 
 """

@@ -1,8 +1,8 @@
 module ScrapeSEC
 
     # source files
-    include("DownloadMetadata.jl")
-    include("DownloadFilings.jl")
+    include("download_metadata.jl")
+    include("download_filings.jl")
 
     export 
     # metadata functions
