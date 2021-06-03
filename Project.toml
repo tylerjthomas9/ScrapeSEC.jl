@@ -1,6 +1,6 @@
 name = "ScrapeSEC"
 uuid = "ad85eb12-031e-4a06-a32c-a657b6bc3e4a"
-authors = ["tylerjthomas9"]
+authors = ["Tyler Thomas <tylerjthomas9@gmail.com>"]
 version = "0.1.0"
 
 [extras]
