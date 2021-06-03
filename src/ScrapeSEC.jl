@@ -9,6 +9,6 @@ module ScrapeSEC
     get_metadata
 
     # filing downloaders
-    get_quarterly_filings
+    get_quarterly_filings, download_filing
 
 end
