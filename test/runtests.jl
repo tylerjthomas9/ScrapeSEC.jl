@@ -1,7 +1,8 @@
 using ScrapeSEC
 using Test
 
-tests = ["DownloadMetadata"]
+tests = ["download_metadata",
+         "download_filings"]
 
 println("Running tests:")
 for t in tests
