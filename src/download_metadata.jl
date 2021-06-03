@@ -3,24 +3,14 @@ import CSV
 import ZipFile
 using ProgressMeter
 
-function get_metadata_urls(start_year=1993::Int)::Vector{String}
-    # get current year, quarter
-    current_date = Dates.now()
-    current_year = Dates.year(current_date)
-    current_quarter = Dates.quarterofyear(current_date)
+"""
+Creates an array of URLs for the metadata files
 
-    # get an array of dates to download metadata
-    quarters = [1, 2, 3, 4]
-    years = collect(start_year:current_year)
-    history = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year)]
-
-    # get urls for all time get_time_periods
-    edgar_prefix = "https://www.sec.gov/Archives/"
-    urls = [edgar_prefix * "edgar/full-index/"*string(i[1])*"/QTR"*string(i[2])*"/master.zip" for i in history]
-
-    return urls
-end
-
+Parameters
+----------
+time_periods::Vector{Tuple{Int64, Int64}})
+    - Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
+"""
 function get_metadata_urls(time_periods::Vector{Tuple{Int64, Int64}})::Vector{String}
 
     # get urls for all time get_time_periods
@@ -30,7 +20,21 @@ function get_metadata_urls(time_periods::Vector{Tuple{Int64, Int64}})::Vector{St
     return urls
 end
 
+"""
+Download filing metadata CSV file
 
+Parameters
+----------
+url::String
+    - URL where metadata file is hosted
+dest::String
+    - Destination folder
+temp_file::String
+    - Name of temporary zip file
+skip_file::Bool
+    - If true, existing files will be skipped
+verbose::Bool
+"""
 function download_metadata(url::String, dest::String, temp_file::String, skip_file::Bool, verbose::Bool)
     
     # get full file path for download
@@ -69,7 +73,25 @@ function download_metadata(url::String, dest::String, temp_file::String, skip_fi
 
 end
 
+"""
+Download all metadata files over a time range
 
+Parameters
+----------
+start_year::Int
+    - first year in range
+end_year::Int
+    - last year in range
+quarters::Vector{Int64}
+    - Quarters of the year to download files from [1,2,3,4]
+skip_file::Bool
+    - If true, existing files will be skipped
+temp_file::String
+    - Name of temporary zip file
+verbose:Bool
+download_rate::Int
+    - Number of filings to download every second (limit=10)
+"""
 function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
                         quarters=[1, 2, 3, 4]::Vector{Int64},
                         skip_file=false::Bool, 
