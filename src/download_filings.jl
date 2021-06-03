@@ -11,17 +11,17 @@ Download filing from https://www.sec.gov/Archives/
 Parameters
 ----------
 row
-    - row of metadata for filing
+    - SEC file name
 full_file::String
     - new local file
 """
-function download_filing(row, full_file::String)
+function download_filing(file_name::String, full_file::String)
     # get filing from SEC
-    full_url = "https://www.sec.gov/Archives/" * row["Filename"]
+    full_url = "https://www.sec.gov/Archives/" * file_name
     text = HTTP.get(full_url).body
 
     # create company folder
-    company_folder = joinpath(dest, split(row["Filename"], "/")[end-1])
+    company_folder = joinpath(dest, split(file_name, "/")[end-1])
     if !isdir(company_folder)
         mkdir(company_folder)
     end
@@ -83,7 +83,7 @@ function get_quarterly_filings(metadata_file::String, dest="../data/"::String; f
         end
         
         # download new filing
-        @async download_filing(row, full_file)
+        @async download_filing(row["Filename"], full_file)
         
         # rest to throttle api hits to around 10/second
         sleep(sleep_time)
