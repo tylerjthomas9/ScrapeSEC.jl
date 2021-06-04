@@ -35,7 +35,7 @@ skip_file::Bool
     - If true, existing files will be skipped
 verbose::Bool
 """
-function download_metadata(url::String; dest::String, temp_file::String, skip_file::Bool, verbose::Bool)
+function download_metadata(url::String; dest::String, temp_file::String, skip_file=false::Bool, verbose=false::Bool)
     
     # get full file path for download
     full_file = split(url, "/")[end-2] * "-" * split(url, "/")[end-1] * ".tsv"
@@ -136,12 +136,12 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
 
     # download metadata files at 10 requests per second
     sleep_time = 1 / download_rate 
-    @showprogress 1 "Downloading Metadata..." for idx in eachindex(urls)
+    @showprogress 1 "Downloading Metadata..."  for idx in eachindex(urls)
         #TODO: Fix async here. All tasks unzip to the same file name, so it currently doesn't work
-        #@async download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
-        download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
+        #@async download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=true)
+        download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=true)
         sleep(sleep_time)
     end
 end
 
-get_metadata(1993, 1994)
+get_metadata(1993, 1993)
