@@ -161,7 +161,7 @@ function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4
     file_paths = [metadata_dest * string(t[1]) * "-QTR" * string(t[2]) * ".tsv"]
 
     for file in file_paths
-        get_quarterly_filings(file; dest=dest; filing_types=filing_types, 
+        get_quarterly_filings(file; dest=dest, filing_types=filing_types, 
                             download_rate=download_rate, skip_file=skip_file)
     end
 
