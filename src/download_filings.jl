@@ -68,7 +68,7 @@ download_rate::Int
 skip_file::Bool
     - If true, existing files will be skipped
 """
-function get_quarterly_filings(metadata_file::String; dest="../data/"::String; filing_types=["10-K", ]::Vector{String}, 
+function get_quarterly_filings(metadata_file::String; dest="../data/"::String, filing_types=["10-K", ]::Vector{String}, 
                             download_rate=10::Int, skip_file=true::Bool)
 
     # verify download_rate is valid (less than 10 requests per second, more than 0)
