@@ -129,7 +129,7 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
     
     # get an array of dates to download metadata
     years = collect(start_year:end_year)
-    time_periods = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year) && (q>2 || y > 1993)]
+    time_periods = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)]
     
     # get download urls
     urls = get_metadata_urls(time_periods)
