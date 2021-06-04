@@ -21,7 +21,7 @@ function download_filing(file_name::String, full_file::String)
     text = HTTP.get(full_url).body
 
     # create company folder
-    company_folder = joinpath(dest, split(file_name, "/")[end-1])
+    company_folder = joinpath(split(file_name, "/")[end-1])
     if !isdir(company_folder)
         mkdir(company_folder)
     end
@@ -47,7 +47,7 @@ metadata_dest::String
 function get_metadata_files(time_periods::Vector{Tuple{Int64, Int64}}, metadata_dest::String)::Vector{String}
 
     # get file paths for all time get_time_periods
-    file_paths = [edgar_metadata_destprefix * string(i[1])*"/QTR"*string(i[2])*"/master.zip" for i in time_periods]
+    file_paths = [joinpath(metadata_dest, string(i[1])*"/QTR"*string(i[2])*"/master.zip") for i in time_periods]
 
     return file_paths
 end
