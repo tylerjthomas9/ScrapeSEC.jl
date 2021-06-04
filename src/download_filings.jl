@@ -158,8 +158,9 @@ function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4
     # make sure all the metadata is downloaded
     get_metadata(start_year, end_Year; quarters=quarters, download_rate=download_rate, dest=metadata_dest, skip_file=skip_metadata_file)
 
-    file_paths = [metadata_dest * string(t[1]) * "-QTR" * string(t[2]) * ".tsv"]
 
+    # download all quarterly filings
+    file_paths = [joinpath(metadata_dest, string(t[1]) * "-QTR" * string(t[2]) * ".tsv") for t in time_periods]
     for file in file_paths
         get_quarterly_filings(file; dest=dest, filing_types=filing_types, 
                             download_rate=download_rate, skip_file=skip_file)
