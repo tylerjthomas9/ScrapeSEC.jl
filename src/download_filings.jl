@@ -97,7 +97,7 @@ function get_quarterly_filings(metadata_file::String; dest="../data/"::String, f
         
         # check if filing already has been downloaded
         full_file = joinpath(dest, replace(row["Filename"], "edgar/data/" => ""))
-        if isfile(full_file)
+        if isfile(full_file) && skip_file
             next 
         end
         
