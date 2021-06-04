@@ -52,63 +52,6 @@ function get_metadata_files(time_periods::Vector{Tuple{Int64, Int64}}, metadata_
     return file_paths
 end
 
-
-
-"""
-Get quarterly filings from https://www.sec.gov/Archives/
-
-Parameters
-----------
-start_year::Int
-    - first year to download filings
-end_year::Int
-    - last year to download filings
-quarters::Vector{Int}
-    - Quarters to download filings from
-dest::String
-    - destination folder for downloaded filings
-filing_types::Vector{String}
-    - types of filings to download (eg. ["10-K", "10-Q"])
-download_rate::Int
-    - Number of filings to download every second (limit=10)
-metadata_dest::String
-    - Directory to store metadata files
-skip_file::Bool
-    - If true, existing files will be skipped
-skip_metadata_file::Bool
-    - If true, existing metadata files will be skipped
-"""
-function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4]::Vector{Int}, 
-                                dest="../data/"::String; filing_types=["10-K", ]::Vector{String}, 
-                                download_rate=10::Int, metadata_dest="../metadata/"::String,
-                                skip_file=true::Bool, skip_metadata_file=false:Bool)
-
-                                # get current year, quarter to prevent errors trying to get future data
-    current_date = Dates.now()
-    current_year = Dates.year(current_date)
-    current_quarter = Dates.quarterofyear(current_date)
-    
-    # set end year to current year if no year is specified
-    if end_year == nothing
-        end_year = current_year
-    end
-
-    # get an array of dates to download metadata
-    years = collect(start_year:end_year)
-    time_periods = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year)]
-
-    # make sure all the metadata is downloaded
-    get_metadata(start_year, end_Year; quarters=quarters, download_rate=download_rate, dest=metadata_dest)
-
-    file_paths = [metadata_dest * string(t[1]) * "-QTR" * string(t[2]) * ".tsv"]
-
-    for file in file_paths
-        get_quarterly_filings(file; dest=dest; filing_types=filing_types, 
-                            download_rate=download_rate, skip_file=skip_file)
-    end
-
-end
-
 """
 Get quarterly filings from https://www.sec.gov/Archives/ using a metadata file
 
@@ -169,5 +112,60 @@ function get_quarterly_filings(metadata_file::String; dest="../data/"::String; f
 end
 
 
+"""
+Get quarterly filings from https://www.sec.gov/Archives/
 
-#get_quarterly_filings("../metadata/2000-QTR1.tsv")
+Parameters
+----------
+start_year::Int
+    - first year to download filings
+end_year::Int
+    - last year to download filings
+quarters::Vector{Int}
+    - Quarters to download filings from
+dest::String
+    - destination folder for downloaded filings
+filing_types::Vector{String}
+    - types of filings to download (eg. ["10-K", "10-Q"])
+download_rate::Int
+    - Number of filings to download every second (limit=10)
+metadata_dest::String
+    - Directory to store metadata files
+skip_file::Bool
+    - If true, existing files will be skipped
+skip_metadata_file::Bool
+    - If true, existing metadata files will be skipped
+"""
+function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4]::Vector{Int}, 
+                                dest="../data/"::String; filing_types=["10-K", ]::Vector{String}, 
+                                download_rate=10::Int, metadata_dest="../metadata/"::String,
+                                skip_file=true::Bool, skip_metadata_file=false:Bool)
+
+                                # get current year, quarter to prevent errors trying to get future data
+    current_date = Dates.now()
+    current_year = Dates.year(current_date)
+    current_quarter = Dates.quarterofyear(current_date)
+    
+    # set end year to current year if no year is specified
+    if end_year == nothing
+        end_year = current_year
+    end
+
+    # get an array of dates to download metadata
+    years = collect(start_year:end_year)
+    time_periods = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year)]
+
+    # make sure all the metadata is downloaded
+    get_metadata(start_year, end_Year; quarters=quarters, download_rate=download_rate, dest=metadata_dest)
+
+    file_paths = [metadata_dest * string(t[1]) * "-QTR" * string(t[2]) * ".tsv"]
+
+    for file in file_paths
+        get_quarterly_filings(file; dest=dest; filing_types=filing_types, 
+                            download_rate=download_rate, skip_file=skip_file)
+    end
+
+end
+
+
+get_quarterly_filings(1993, 1994)
