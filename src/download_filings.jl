@@ -139,7 +139,7 @@ skip_metadata_file::Bool
 function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4]::Vector{Int}, 
                                 dest="../data/"::String, filing_types=["10-K", ]::Vector{String}, 
                                 download_rate=10::Int, metadata_dest="../metadata/"::String,
-                                skip_file=true::Bool)
+                                skip_file=true::Bool, skip_metadata_file=true::Bool)
 
                                 # get current year, quarter to prevent errors trying to get future data
     current_date = Dates.now()
@@ -156,7 +156,7 @@ function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4
     time_periods = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year)]
 
     # make sure all the metadata is downloaded
-    get_metadata(start_year, end_Year; quarters=quarters, download_rate=download_rate, dest=metadata_dest)
+    get_metadata(start_year, end_Year; quarters=quarters, download_rate=download_rate, dest=metadata_dest, skip_file=skip_metadata_file)
 
     file_paths = [metadata_dest * string(t[1]) * "-QTR" * string(t[2]) * ".tsv"]
 
@@ -168,4 +168,4 @@ function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4
 end
 
 
-#get_quarterly_filings(1993, 1994)
+get_quarterly_filings(1993, 1994)
