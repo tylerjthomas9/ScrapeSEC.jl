@@ -35,7 +35,7 @@ skip_file::Bool
     - If true, existing files will be skipped
 verbose::Bool
 """
-function download_metadata(url::String, dest::String, temp_file::String, skip_file::Bool, verbose::Bool)
+function download_metadata(url::String; dest::String, temp_file::String, skip_file::Bool, verbose::Bool)
     
     # get full file path for download
     full_file = split(url, "/")[end-2] * "-" * split(url, "/")[end-1] * ".tsv"
@@ -43,7 +43,7 @@ function download_metadata(url::String, dest::String, temp_file::String, skip_fi
     if verbose; println(full_file); end
     
     # make unique temp file
-    temp_file = temp_file * split(full_file, "/")[end][1:end-4] * ".zip"
+    temp_file = joinpath(dest, temp_file * split(full_file, "/")[end][1:end-4] * ".zip")
 
     # check if we skip the download
     if isfile(full_file) & skip_file
@@ -137,9 +137,11 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
     # download metadata files at 10 requests per second
     sleep_time = 1 / download_rate 
     @showprogress 1 "Downloading Metadata..." for idx in eachindex(urls)
-        @async download_metadata(urls[idx], dest, temp_file, skip_file, verbose)
+        #TODO: Fix async here. All tasks unzip to the same file name, so it currently doesn't work
+        #@async download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
+        download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
         sleep(sleep_time)
     end
 end
 
-#get_metadata(1993, 1993)
+get_metadata(1993, 1994)
