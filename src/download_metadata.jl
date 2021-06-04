@@ -140,8 +140,8 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
         #TODO: Fix async here. All tasks unzip to the same file name, so it currently doesn't work
         #@async download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=true)
         download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
-        sleep(1)
+        sleep(sleep_time)
     end
 end
 
-#get_metadata(1993, 1993)
+get_metadata(1993, 1995)
