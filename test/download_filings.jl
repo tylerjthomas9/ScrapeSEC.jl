@@ -7,6 +7,7 @@ using Test
     full_file = "temp_filing.txt"
     download_filing(file_name, full_file)
     @test isfile(full_file)
+    rm(full_file)
 
 
 end
