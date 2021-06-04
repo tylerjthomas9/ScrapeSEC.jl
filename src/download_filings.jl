@@ -137,7 +137,7 @@ skip_metadata_file::Bool
     - If true, existing metadata files will be skipped
 """
 function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4]::Vector{Int}, 
-                                dest="../data/"::String; filing_types=["10-K", ]::Vector{String}, 
+                                dest="../data/"::String, filing_types=["10-K", ]::Vector{String}, 
                                 download_rate=10::Int, metadata_dest="../metadata/"::String,
                                 skip_file=true::Bool, skip_metadata_file=false:Bool)
 
