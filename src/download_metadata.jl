@@ -139,7 +139,9 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
     @showprogress 1 "Downloading Metadata..."  for idx in eachindex(urls)
         #TODO: Fix async here. All tasks unzip to the same file name, so it currently doesn't work
         #@async download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=true)
-        @task download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
+        a = @task download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
+        schedule(a)
+        yield()
         sleep(sleep_time)
     end
 end
