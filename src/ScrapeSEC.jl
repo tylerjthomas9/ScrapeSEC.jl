@@ -1,7 +1,8 @@
 module ScrapeSEC
 
     # source files
-    include("download_metadata.jl")
+    using Base: Bool
+include("download_metadata.jl")
     include("download_filings.jl")
 
     export 
