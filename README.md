@@ -1,3 +1,14 @@
+## Installation
+Normal install:
+```julia
+]add ScrapeSEC
+```
+
+From source:
+```julia
+]add "https://github.com/tylerjthomas9/ScrapeSEC.jl/"
+```
+
 # Examples
 
 Download filing metadata for 2012-2020 from the [SEC archives](https://www.sec.gov/Archives/).
