@@ -1,5 +1,5 @@
 ## Installation
-Normal install:
+
 ```julia
 ]add ScrapeSEC
 ```
