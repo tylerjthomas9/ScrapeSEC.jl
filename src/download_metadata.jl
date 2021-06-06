@@ -10,6 +10,11 @@ Parameters
 ----------
 time_periods::Vector{Tuple{Int64, Int64}})
     - Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
+
+Returns
+----------
+urls::Vector{String}
+    - Vector of metadata urls
 """
 function get_metadata_urls(time_periods::Vector{Tuple{Int64, Int64}})::Vector{String}
 
@@ -34,6 +39,10 @@ temp_file::String
 skip_file::Bool
     - If true, existing files will be skipped
 verbose::Bool
+
+Returns
+----------
+nothing
 """
 function download_metadata(url::String; dest::String, temp_file::String, skip_file=false::Bool, verbose=false::Bool)
     
@@ -71,6 +80,7 @@ function download_metadata(url::String; dest::String, temp_file::String, skip_fi
     end
     close(f)
 
+    return
 end
 
 """
@@ -91,6 +101,10 @@ temp_file::String
 verbose:Bool
 download_rate::Int
     - Number of filings to download every second (limit=10)
+
+Returns
+----------
+nothing
 """
 function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
                         quarters=[1, 2, 3, 4]::Vector{Int64},
@@ -142,8 +156,10 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
         a = @task download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
         schedule(a)
         yield()
-        sleep(sleep_time)
+        sleep(1)
     end
+
+    return
 end
 
 #get_metadata(1993, 1995)

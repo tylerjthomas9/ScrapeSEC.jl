@@ -43,6 +43,11 @@ time_periods::Vector{Tuple{Int64, Int64}})
     - Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
 metadata_dest::String
     - Directory where metadata is stored
+
+Returns
+----------
+file_paths::Vector{String}
+    - Vector of metadata file paths
 """
 function get_metadata_files(time_periods::Vector{Tuple{Int64, Int64}}, metadata_dest::String)::Vector{String}
 
@@ -67,6 +72,10 @@ download_rate::Int
     - Number of filings to download every second (limit=10)
 skip_file::Bool
     - If true, existing files will be skipped
+
+Returns
+----------
+nothing
 """
 function get_quarterly_filings(metadata_file::String; dest="../data/"::String, filing_types=["10-K", ]::Vector{String}, 
                             download_rate=10::Int, skip_file=true::Bool)
@@ -82,8 +91,7 @@ function get_quarterly_filings(metadata_file::String; dest="../data/"::String, f
     
     println("Metadata: " * metadata_file)
     
-    df = DataFrame(CSV.File(metadata_file, delim="|"))
-    #df = df[df[!, "Form Type"] .== "10-K", :] # just 10-K's
+    df = CSV.File(metadata_file, delim="|") |> DataFrame
     df = df[∈(filing_types).(df[!, "Form Type"]), :]
 
     # create download folder if needed
@@ -135,6 +143,10 @@ skip_file::Bool
     - If true, existing files will be skipped
 skip_metadata_file::Bool
     - If true, existing metadata files will be skipped
+
+Returns
+----------
+nothing
 """
 function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4]::Vector{Int}, 
                                 dest="../data/"::String, filing_types=["10-K", ]::Vector{String}, 
@@ -166,6 +178,7 @@ function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4
                             download_rate=download_rate, skip_file=skip_file)
     end
 
+    return
 end
 
 
