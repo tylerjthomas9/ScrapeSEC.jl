@@ -142,7 +142,7 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
         a = @task download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
         schedule(a)
         yield()
-        sleep(sleep_time)
+        sleep(1)
     end
 end
 
