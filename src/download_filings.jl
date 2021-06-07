@@ -82,8 +82,7 @@ function get_quarterly_filings(metadata_file::String; dest="../data/"::String, f
     
     println("Metadata: " * metadata_file)
     
-    df = DataFrame(CSV.File(metadata_file, delim="|"))
-    #df = df[df[!, "Form Type"] .== "10-K", :] # just 10-K's
+    df = CSV.File(metadata_file, delim="|") |> DataFrame
     df = df[∈(filing_types).(df[!, "Form Type"]), :]
 
     # create download folder if needed
