@@ -9,12 +9,12 @@ Creates an array of URLs for the metadata files
 Parameters
 ----------
 time_periods::Vector{Tuple{Int64, Int64}})
-    - Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
+  * Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
 
 Returns
 ----------
 urls::Vector{String}
-    - Vector of metadata urls
+  * Vector of metadata urls
 """
 function get_metadata_urls(time_periods::Vector{Tuple{Int64, Int64}})::Vector{String}
 
@@ -31,13 +31,13 @@ Download filing metadata CSV file
 Parameters
 ----------
 url::String
-    - URL where metadata file is hosted
+  * URL where metadata file is hosted
 dest::String
-    - Destination folder
+  * Destination folder
 temp_file::String
-    - Name of temporary zip file
+  * Name of temporary zip file
 skip_file::Bool
-    - If true, existing files will be skipped
+  * If true, existing files will be skipped
 verbose::Bool
 
 Returns
@@ -89,18 +89,18 @@ Download all metadata files over a time range
 Parameters
 ----------
 start_year::Int
-    - first year in range
+  * first year in range
 end_year::Int
-    - last year in range
+  * last year in range
 quarters::Vector{Int64}
-    - Quarters of the year to download files from [1,2,3,4]
+  * Quarters of the year to download files from [1,2,3,4]
 skip_file::Bool
-    - If true, existing files will be skipped
+  * If true, existing files will be skipped
 temp_file::String
-    - Name of temporary zip file
+  * Name of temporary zip file
 verbose:Bool
 download_rate::Int
-    - Number of filings to download every second (limit=10)
+  * Number of filings to download every second (limit=10)
 
 Returns
 ----------
