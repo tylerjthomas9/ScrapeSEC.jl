@@ -11,9 +11,9 @@ Download filing from https://www.sec.gov/Archives/
 Parameters
 ----------
 file_name
-    - SEC file name
+  * SEC file name
 full_file::String
-    - new local file
+  * new local file
 """
 function download_filing(file_name::String, full_file::String, dest::String)
     # get filing from SEC
@@ -40,9 +40,9 @@ Creates an array of file paths of the metadata files
 Parameters
 ----------
 time_periods::Vector{Tuple{Int64, Int64}})
-    - Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
+  * Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
 metadata_dest::String
-    - Directory where metadata is stored
+  * Directory where metadata is stored
 
 Returns
 ----------
@@ -63,15 +63,15 @@ Get quarterly filings from https://www.sec.gov/Archives/ using a metadata file
 Parameters
 ----------
 metadata_file::String
-    - csv file with filing metadata
+  * csv file with filing metadata
 dest::String
-    - destination folder for downloaded filings
+  * destination folder for downloaded filings
 filing_types::Vector{String}
-    - types of filings to download (eg. ["10-K", "10-Q"])
+  * types of filings to download (eg. ["10-K", "10-Q"])
 download_rate::Int
-    - Number of filings to download every second (limit=10)
+  * Number of filings to download every second (limit=10)
 skip_file::Bool
-    - If true, existing files will be skipped
+  * If true, existing files will be skipped
 
 Returns
 ----------
@@ -126,23 +126,23 @@ Get quarterly filings from https://www.sec.gov/Archives/
 Parameters
 ----------
 start_year::Int
-    - first year to download filings
+  * first year to download filings
 end_year::Int
-    - last year to download filings
+  * last year to download filings
 quarters::Vector{Int}
-    - Quarters to download filings from
+  * Quarters to download filings from
 dest::String
-    - destination folder for downloaded filings
+  * destination folder for downloaded filings
 filing_types::Vector{String}
-    - types of filings to download (eg. ["10-K", "10-Q"])
+  * types of filings to download (eg. ["10-K", "10-Q"])
 download_rate::Int
-    - Number of filings to download every second (limit=10)
+  * Number of filings to download every second (limit=10)
 metadata_dest::String
-    - Directory to store metadata files
+  * Directory to store metadata files
 skip_file::Bool
-    - If true, existing files will be skipped
+  * If true, existing files will be skipped
 skip_metadata_file::Bool
-    - If true, existing metadata files will be skipped
+  * If true, existing metadata files will be skipped
 
 Returns
 ----------
