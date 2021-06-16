@@ -26,7 +26,7 @@ get_quarterly_filings(2012, 2020; filing_types=["10-K", "8-K", "10-Q"])
 ```
 
 
-Download filing metadata for 2012-2020, create a master index file, and download 10-Ks using the master index
+Download filing metadata for 2012-2020, create a main index file, and download 10-Ks using the master index
 ```julia
 using ScrapeSEC
 get_metadata(2012, 2020)
