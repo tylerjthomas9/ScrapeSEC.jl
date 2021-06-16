@@ -1,3 +1,5 @@
+[![Update Morningstar](https://github.com/tylerjthomas9/ScrapeFinData/actions/workflows/morningstar.yml/badge.svg)](https://github.com/tylerjthomas9/ScrapeFinData/actions/workflows/morningstar.yml)
+
 ## Installation
 
 ```julia
