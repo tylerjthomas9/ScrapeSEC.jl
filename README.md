@@ -1,12 +1,12 @@
 ## Installation
 
 ```julia
-]add ScrapeSEC
+julia> using Pkg; Pkg.add("ScrapeSEC")
 ```
 
 From source:
 ```julia
-]add "https://github.com/tylerjthomas9/ScrapeSEC.jl/"
+julia> using Pkg; Pkg.add(url="https://github.com/tylerjthomas9/ScrapeSEC.jl/")
 ```
 
 # Examples
