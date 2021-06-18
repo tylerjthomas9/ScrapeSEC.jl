@@ -12,3 +12,4 @@ module ScrapeSEC
     get_quarterly_filings, download_filing
 
 end
+
