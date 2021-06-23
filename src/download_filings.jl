@@ -47,7 +47,7 @@ metadata_dest::String
 Returns
 ----------
 file_paths::Vector{String}
-    - Vector of metadata file paths
+    * Vector of metadata file paths
 """
 function get_metadata_files(time_periods::Vector{Tuple{Int64, Int64}}, metadata_dest::String)::Vector{String}
 
