@@ -180,6 +180,3 @@ function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4
 
     return
 end
-
-
-#get_quarterly_filings(1993, 1994)
