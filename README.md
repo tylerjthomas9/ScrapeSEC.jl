@@ -6,9 +6,17 @@
 julia> using Pkg; Pkg.add("ScrapeSEC")
 ```
 
+```julia
+]add ScrapeSEC
+```
+
 From source:
 ```julia
 julia> using Pkg; Pkg.add(url="https://github.com/tylerjthomas9/ScrapeSEC.jl/")
+```
+
+```julia
+]add https://github.com/tylerjthomas9/ScrapeSEC.jl/
 ```
 
 # Examples
