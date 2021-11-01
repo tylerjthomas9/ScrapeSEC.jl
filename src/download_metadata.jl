@@ -1,5 +1,9 @@
 
 """
+    function get_metadata_urls(
+      time_periods::Vector{Tuple{Int64, Int64}}
+    )::Vector{String}
+
 Creates an array of URLs for the metadata files
 
 Parameters
@@ -22,6 +26,10 @@ function get_metadata_urls(time_periods::Vector{Tuple{Int64, Int64}})::Vector{St
 end
 
 """
+    function download_metadata(url::String; dest::String, 
+      temp_file::String, skip_file=false::Bool, verbose=false::Bool
+    )
+
 Download filing metadata CSV file
 
 Parameters
@@ -80,6 +88,15 @@ function download_metadata(url::String; dest::String, temp_file::String, skip_fi
 end
 
 """
+  function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
+    quarters=[1, 2, 3, 4]::Vector{Int64},
+    skip_file=false::Bool, 
+    dest="../metadata/"::String, 
+    temp_file="temp_"::String,
+    verbose=false::Bool,
+    download_rate=10::Int
+  )
+
 Download all metadata files over a time range
 
 Parameters

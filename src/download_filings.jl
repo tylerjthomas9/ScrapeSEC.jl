@@ -1,5 +1,9 @@
 
 """
+  function download_filing(file_name::String, 
+    full_file::String, dest::String
+  )
+
 Download filing from https://www.sec.gov/Archives/
 
 Parameters
@@ -29,6 +33,11 @@ function download_filing(file_name::String, full_file::String, dest::String)
 end
 
 """
+  function get_metadata_files(
+    time_periods::Vector{Tuple{Int64, Int64}}, 
+    metadata_dest::String
+  )::Vector{String}
+
 Creates an array of file paths of the metadata files
 
 Parameters
@@ -51,7 +60,15 @@ function get_metadata_files(time_periods::Vector{Tuple{Int64, Int64}}, metadata_
     return file_paths
 end
 
-"""
+  """
+  function get_quarterly_filings(
+    metadata_file::String; 
+    dest="../data/"::String, 
+    filing_types=["10-K", ]::Vector{String}, 
+    download_rate=10::Int, 
+    skip_file=true::Bool
+  )
+
 Get quarterly filings from https://www.sec.gov/Archives/ using a metadata file
 
 Parameters
@@ -115,6 +132,18 @@ end
 
 
 """
+  function get_quarterly_filings(
+    start_year::Int, 
+    end_year::Int; 
+    quarters=[1,2,3,4]::Vector{Int}, 
+    dest="../data/"::String, 
+    filing_types=["10-K", ]::Vector{String}, 
+    download_rate=10::Int, 
+    metadata_dest="../metadata/"::String,
+    skip_file=true::Bool, 
+    skip_metadata_file=true::Bool
+  )
+
 Get quarterly filings from https://www.sec.gov/Archives/
 
 Parameters

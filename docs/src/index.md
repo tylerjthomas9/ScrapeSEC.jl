@@ -26,7 +26,7 @@ get_metadata
 
 # Combine Metadata Files
 ```@docs
-create_main_index
+ScrapeSEC.create_main_index
 ```
 
 # Download Filings
