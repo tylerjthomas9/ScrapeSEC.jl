@@ -1,7 +1,3 @@
-import Dates
-import CSV
-import ZipFile
-using ProgressMeter
 
 """
 Creates an array of URLs for the metadata files
