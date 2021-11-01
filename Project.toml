@@ -12,14 +12,12 @@ ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 
 [compat]
-julia = "1.6"
 CSV = "0.8"
 DataFrames = "1"
 HTTP = "0.9"
 ProgressMeter = "1"
 ZipFile = "0.9"
-
-
+julia = "1.6"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
