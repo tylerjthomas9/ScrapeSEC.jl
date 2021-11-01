@@ -19,12 +19,15 @@ julia> ]add https://github.com/tylerjthomas9/ScrapeSEC.jl
 julia> using Pkg; Pkg.add(url="https://github.com/tylerjthomas9/ScrapeSEC.jl")
 ```
 
-# Metadata
+# Download Metadata
 ```@docs
 get_metadata
-create_main_index
 ```
 
+# Combine Metadata Files
+```@docs
+create_main_index
+```
 
 # Download Filings
 ```@docs
