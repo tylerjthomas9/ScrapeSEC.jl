@@ -1,9 +1,3 @@
-using DataFrames
-import CSV
-import HTTP
-using ProgressMeter
-include("download_metadata.jl")
-
 
 """
 Download filing from https://www.sec.gov/Archives/
