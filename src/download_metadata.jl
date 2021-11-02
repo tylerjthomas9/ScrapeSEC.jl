@@ -1,20 +1,15 @@
 
 """
     function get_metadata_urls(
-      time_periods::Vector{Tuple{Int64, Int64}}
+        time_periods::Vector{Tuple{Int64, Int64}}
     )::Vector{String}
 
 Creates an array of URLs for the metadata files
 
 Parameters
-----------
-time_periods::Vector{Tuple{Int64, Int64}})
-  * Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
+* time_periods: Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
 
-Returns
-----------
-urls::Vector{String}
-  * Vector of metadata urls
+Returns: Vector of metadata urls
 """
 function get_metadata_urls(time_periods::Vector{Tuple{Int64, Int64}})::Vector{String}
 
@@ -27,26 +22,17 @@ end
 
 """
     function download_metadata(url::String; dest::String, 
-      temp_file::String, skip_file=false::Bool, verbose=false::Bool
+        temp_file::String, skip_file=false::Bool, verbose=false::Bool
     )
 
 Download filing metadata CSV file
 
 Parameters
-----------
-url::String
-  * URL where metadata file is hosted
-dest::String
-  * Destination folder
-temp_file::String
-  * Name of temporary zip file
-skip_file::Bool
-  * If true, existing files will be skipped
-verbose::Bool
-
-Returns
-----------
-nothing
+* url: URL where metadata file is hosted
+* dest: Destination folder
+* temp_file: Name of temporary zip file
+* skip_file: If true, existing files will be skipped
+* verbose: Print out log 
 """
 function download_metadata(url::String; dest::String, temp_file::String, skip_file=false::Bool, verbose=false::Bool)
     
@@ -88,36 +74,25 @@ function download_metadata(url::String; dest::String, temp_file::String, skip_fi
 end
 
 """
-  function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
-    quarters=[1, 2, 3, 4]::Vector{Int64},
-    skip_file=false::Bool, 
-    dest="../metadata/"::String, 
-    temp_file="temp_"::String,
-    verbose=false::Bool,
-    download_rate=10::Int
-  )
+    function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
+        quarters=[1, 2, 3, 4]::Vector{Int64},
+        skip_file=false::Bool, 
+        dest="../metadata/"::String, 
+        temp_file="temp_"::String,
+        verbose=false::Bool,
+        download_rate=10::Int
+    )
 
 Download all metadata files over a time range
 
 Parameters
-----------
-start_year::Int
-  * first year in range
-end_year::Int
-  * last year in range
-quarters::Vector{Int64}
-  * Quarters of the year to download files from [1,2,3,4]
-skip_file::Bool
-  * If true, existing files will be skipped
-temp_file::String
-  * Name of temporary zip file
-verbose:Bool
-download_rate::Int
-  * Number of filings to download every second (limit=10)
-
-Returns
-----------
-nothing
+* start_year: first year in range
+* end_year: last year in range
+* quarters: Quarters of the year to download files from [1,2,3,4]
+* skip_file: If true, existing files will be skipped
+* temp_file: Name of temporary zip file
+* verbose: Print out log
+* download_rate: Number of filings to download every second (limit=10)
 """
 function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
                         quarters=[1, 2, 3, 4]::Vector{Int64},

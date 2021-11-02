@@ -1,4 +1,4 @@
-# WRDSMerger.jl Docs
+# ScrapeSEC.jl Docs
 
 # Installation
 From the Julia REPL:

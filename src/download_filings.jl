@@ -1,31 +1,28 @@
 
 """
-  function download_filing(file_name::String, 
-    full_file::String, dest::String
-  )
+    function download_filing(file_name::String, 
+        new_file::String, dest::String
+    )
 
 Download filing from https://www.sec.gov/Archives/
 
 Parameters
-----------
-file_name
-  * SEC file name
-full_file::String
-  * new local file
+* file_name: SEC file name
+* new_file: new local file
 """
-function download_filing(file_name::String, full_file::String, dest::String)
+function download_filing(file_name::String, new_file::String, dest::String)
     # get filing from SEC
     full_url = "https://www.sec.gov/Archives/" * file_name
     text = HTTP.get(full_url).body
 
     # create company folder
-    company_folder = joinpath(dest, split(full_file, "/")[end-1])
+    company_folder = joinpath(dest, split(new_file, "/")[end-1])
     if !isdir(company_folder)
         mkdir(company_folder)
     end
 
     # save filing
-    f = open(full_file, "w")
+    f = open(new_file, "w")
     write(f, text)
     close(f)
 
@@ -33,24 +30,18 @@ function download_filing(file_name::String, full_file::String, dest::String)
 end
 
 """
-  function get_metadata_files(
-    time_periods::Vector{Tuple{Int64, Int64}}, 
-    metadata_dest::String
-  )::Vector{String}
+    function get_metadata_files(
+        time_periods::Vector{Tuple{Int64, Int64}}, 
+        metadata_dest::String
+    )::Vector{String}
 
 Creates an array of file paths of the metadata files
 
 Parameters
-----------
-time_periods::Vector{Tuple{Int64, Int64}})
-  * Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
-metadata_dest::String
-  * Directory where metadata is stored
+* time_periods: Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
+* metadata_dest: Directory where metadata is stored
 
-Returns
-----------
-file_paths::Vector{String}
-    * Vector of metadata file paths
+Returns: Vector of metadata file paths
 """
 function get_metadata_files(time_periods::Vector{Tuple{Int64, Int64}}, metadata_dest::String)::Vector{String}
 
@@ -61,32 +52,22 @@ function get_metadata_files(time_periods::Vector{Tuple{Int64, Int64}}, metadata_
 end
 
   """
-  function get_quarterly_filings(
-    metadata_file::String; 
-    dest="../data/"::String, 
-    filing_types=["10-K", ]::Vector{String}, 
-    download_rate=10::Int, 
-    skip_file=true::Bool
-  )
+    function get_quarterly_filings(
+        metadata_file::String; 
+        dest="../data/"::String, 
+        filing_types=["10-K", ]::Vector{String}, 
+        download_rate=10::Int, 
+        skip_file=true::Bool
+    )
 
 Get quarterly filings from https://www.sec.gov/Archives/ using a metadata file
 
 Parameters
-----------
-metadata_file::String
-  * csv file with filing metadata
-dest::String
-  * destination folder for downloaded filings
-filing_types::Vector{String}
-  * types of filings to download (eg. ["10-K", "10-Q"])
-download_rate::Int
-  * Number of filings to download every second (limit=10)
-skip_file::Bool
-  * If true, existing files will be skipped
-
-Returns
-----------
-nothing
+* metadata_file: CSV file with filing metadata
+* dest: Destination folder for downloaded filings
+* filing_types: Types of filings to download (eg. ["10-K", "10-Q"])
+* download_rate: Number of filings to download every second (limit=10)
+* skip_file: If true, existing files will be skipped
 """
 function get_quarterly_filings(metadata_file::String; dest="../data/"::String, filing_types=["10-K", ]::Vector{String}, 
                             download_rate=10::Int, skip_file=true::Bool)
@@ -132,44 +113,30 @@ end
 
 
 """
-  function get_quarterly_filings(
-    start_year::Int, 
-    end_year::Int; 
-    quarters=[1,2,3,4]::Vector{Int}, 
-    dest="../data/"::String, 
-    filing_types=["10-K", ]::Vector{String}, 
-    download_rate=10::Int, 
-    metadata_dest="../metadata/"::String,
-    skip_file=true::Bool, 
-    skip_metadata_file=true::Bool
-  )
+    function get_quarterly_filings(
+        start_year::Int, 
+        end_year::Int; 
+        quarters=[1,2,3,4]::Vector{Int}, 
+        dest="../data/"::String, 
+        filing_types=["10-K", ]::Vector{String}, 
+        download_rate=10::Int, 
+        metadata_dest="../metadata/"::String,
+        skip_file=true::Bool, 
+        skip_metadata_file=true::Bool
+    )
 
 Get quarterly filings from https://www.sec.gov/Archives/
 
 Parameters
-----------
-start_year::Int
-  * first year to download filings
-end_year::Int
-  * last year to download filings
-quarters::Vector{Int}
-  * Quarters to download filings from
-dest::String
-  * destination folder for downloaded filings
-filing_types::Vector{String}
-  * types of filings to download (eg. ["10-K", "10-Q"])
-download_rate::Int
-  * Number of filings to download every second (limit=10)
-metadata_dest::String
-  * Directory to store metadata files
-skip_file::Bool
-  * If true, existing files will be skipped
-skip_metadata_file::Bool
-  * If true, existing metadata files will be skipped
-
-Returns
-----------
-nothing
+* start_year: First year to download filings
+* end_year: Last year to download filings
+* quarters: Quarters to download filings from
+* dest: Destination folder for downloaded filings
+* filing_types: Types of filings to download (eg. ["10-K", "10-Q"])
+* download_rate: Number of filings to download every second (limit=10)
+* metadata_dest: Directory to store metadata files
+* skip_file: If true, existing files will be skipped
+* skip_metadata_file: If true, existing metadata files will be skipped
 """
 function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4]::Vector{Int}, 
                                 dest="../data/"::String, filing_types=["10-K", ]::Vector{String}, 
