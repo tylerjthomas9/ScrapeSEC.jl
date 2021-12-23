@@ -27,4 +27,4 @@ Manifest.toml
 *.zip
 *.txt
 *.idx
-temp_metadata
+test/temp_*
