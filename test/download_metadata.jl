@@ -7,8 +7,8 @@
             "https://www.sec.gov/Archives/edgar/full-index/2021/QTR2/master.zip"]
     @test urls == ScrapeSEC.get_metadata_urls(time_periods)
 
-    inferred_type = @inferred ScrapeSEC.get_metadata_urls(time_periods)
-    @test inferred_type == Vector{String}
+    val = @inferred ScrapeSEC.get_metadata_urls(time_periods)
+    @test typeof(val) == Vector{String}
 end
 
 @testset "download_metadata()" begin
