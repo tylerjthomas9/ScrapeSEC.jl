@@ -76,9 +76,6 @@ function get_quarterly_filings(metadata_file::String; dest="../data/"::String, f
     if download_rate > 10
         download_rate = 10
         println("download_rate of more than 10 per second(", download_rate, ") is not valid. download_rate has been set to 10/second.")
-    elseif download_rate < 1
-        download_rate = 1
-        println("download_rate of less than 1 per second(", download_rate, ") is not valid. download_rate has been set to 1/second.")
     end
     
     println("Metadata: " * metadata_file)
@@ -158,7 +155,11 @@ function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4
     time_periods = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)]
 
     # make sure all the metadata is downloaded
-    download_metadata_files(start_year, end_year; quarters=quarters, download_rate=download_rate, dest=metadata_dest, skip_file=skip_metadata_file)
+    download_metadata_files(start_year, end_year; 
+                    quarters=quarters, 
+                    download_rate=download_rate, 
+                    dest=metadata_dest, 
+                    skip_file=skip_metadata_file)
 
 
     # download all quarterly filings
