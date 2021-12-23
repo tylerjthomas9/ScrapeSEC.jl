@@ -16,7 +16,7 @@ module ScrapeSEC
 
     export 
     # metadata functions
-    get_metadata, create_main_index,
+    download_metadata_files, create_main_index,
 
     # filing downloaders
     get_quarterly_filings, download_filing

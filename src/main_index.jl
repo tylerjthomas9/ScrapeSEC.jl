@@ -15,11 +15,11 @@ function create_main_index(metadata_folder="../metadata/"::String,
                             main_file="../metadata/main_idx.tsv"::String)
 
     # Import all csv files into a dataframe
-    metadata_files = [i for i in readdir(metadata_folder; join=true) if i!=main_file]
+    metadata_files = [i for i in readdir(metadata_folder; join=true) if (i!=main_file) & occursin(".tsv", i)]
     df = reduce(vcat, [DataFrame(CSV.File(i, delim="|")) for i in metadata_files])
 
     # remove duplicates
-    df = df[findall(nonunique(df)), :]
+    df = df[.!nonunique(df), :]
 
     # export df
     CSV.write(main_file, df, delim="|")

@@ -21,7 +21,7 @@ julia> using Pkg; Pkg.add(url="https://github.com/tylerjthomas9/ScrapeSEC.jl")
 
 # Download Metadata
 ```@docs
-get_metadata
+download_metadata_files
 ```
 
 # Combine Metadata Files

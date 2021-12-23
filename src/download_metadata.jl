@@ -22,7 +22,7 @@ end
 
 """
     function download_metadata(url::String; dest::String, 
-        temp_file::String, skip_file=false::Bool, verbose=false::Bool
+        skip_file=false::Bool, verbose=false::Bool
     )
 
 Download filing metadata CSV file
@@ -30,19 +30,19 @@ Download filing metadata CSV file
 Parameters
 * url: URL where metadata file is hosted
 * dest: Destination folder
-* temp_file: Name of temporary zip file
 * skip_file: If true, existing files will be skipped
 * verbose: Print out log 
 """
-function download_metadata(url::String; dest::String, temp_file::String, skip_file=false::Bool, verbose=false::Bool)
+function download_metadata(url::String; dest::String, skip_file=false::Bool, verbose=false::Bool)
     
     # get full file path for download
     full_file = split(url, "/")[end-2] * "-" * split(url, "/")[end-1] * ".tsv"
     full_file = joinpath(dest, full_file)
     if verbose; println(full_file); end
     
-    # make unique temp file
-    temp_file = joinpath(dest, temp_file * split(full_file, "/")[end][1:end-4] * ".zip")
+    #TODO: unique temp files, so we can async download metadata
+    temp_file = "main.idx"
+    temp_zip = "main.zip"
 
     # check if we skip the download
     if isfile(full_file) & skip_file
@@ -51,15 +51,22 @@ function download_metadata(url::String; dest::String, temp_file::String, skip_fi
     end
 
     # download, unzip file
-    download(url, temp_file)
-    run(`unzip -o -qq $temp_file`)
-    rm(temp_file)
+    HTTP.download(url, temp_zip)
+    zarchive = ZipFile.Reader(temp_zip)
+    for f in zarchive.files
+        @assert f.name == "master.idx"
+        out = open(temp_file,"w")
+        write(out,read(f,String))
+        close(out)
+    end
+    close(zarchive)
+    rm(temp_zip)
 
     # import unziped file for cleaning
-    f = open("master.idx", "r")
+    f = open(temp_file, "r")
     metadata = readlines(f)[10:end] # skip fluff at top
     close(f)
-    rm("master.idx")
+    rm(temp_file)
 
     # save metadata file
     f = open(full_file, "w")
@@ -74,11 +81,10 @@ function download_metadata(url::String; dest::String, temp_file::String, skip_fi
 end
 
 """
-    function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
+    function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
         quarters=[1, 2, 3, 4]::Vector{Int64},
         skip_file=false::Bool, 
         dest="../metadata/"::String, 
-        temp_file="temp_"::String,
         verbose=false::Bool,
         download_rate=10::Int
     )
@@ -90,17 +96,13 @@ Parameters
 * end_year: last year in range
 * quarters: Quarters of the year to download files from [1,2,3,4]
 * skip_file: If true, existing files will be skipped
-* temp_file: Name of temporary zip file
 * verbose: Print out log
-* download_rate: Number of filings to download every second (limit=10)
 """
-function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
+function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
                         quarters=[1, 2, 3, 4]::Vector{Int64},
                         skip_file=false::Bool, 
                         dest="../metadata/"::String, 
-                        temp_file="temp_"::String,
-                        verbose=false::Bool,
-                        download_rate=10::Int)
+                        verbose=false::Bool)
 
 
     # verify download_rate is valid (less than 10 requests per second, more than 0)
@@ -138,10 +140,8 @@ function get_metadata(start_year::Int64, end_year=nothing::Union{Int64, Nothing}
 
     # download metadata files
     @showprogress 1 "Downloading Metadata..."  for idx in eachindex(urls)
-        #TODO: Fix async here. All tasks unzip to the same file name, so it currently doesn't work
-        #@async download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=true)
-        download_metadata(urls[idx]; dest=dest, temp_file=temp_file, skip_file=skip_file, verbose=verbose)
-        sleep(0.5)
+        download_metadata(urls[idx]; dest=dest, 
+                    skip_file=skip_file, verbose=verbose)
     end
 
     return

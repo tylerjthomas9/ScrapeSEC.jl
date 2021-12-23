@@ -158,7 +158,7 @@ function get_quarterly_filings(start_year::Int, end_year::Int; quarters=[1,2,3,4
     time_periods = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)]
 
     # make sure all the metadata is downloaded
-    get_metadata(start_year, end_year; quarters=quarters, download_rate=download_rate, dest=metadata_dest, skip_file=skip_metadata_file)
+    download_metadata_files(start_year, end_year; quarters=quarters, download_rate=download_rate, dest=metadata_dest, skip_file=skip_metadata_file)
 
 
     # download all quarterly filings
