@@ -1,6 +1,3 @@
-using ScrapeSEC
-using Test
-
 @testset "download_filing() (Download Filing)" begin
     
 

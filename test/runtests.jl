@@ -1,8 +1,10 @@
 using ScrapeSEC
+using SHA
 using Test
 
 tests = ["download_metadata",
-         "download_filings"]
+         "download_filings",
+         "main_index"]
 
 println("Running tests:")
 for t in tests
