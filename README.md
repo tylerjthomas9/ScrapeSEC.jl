@@ -2,7 +2,6 @@
 [![CI](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml)
 
 <a href="https://trackgit.com">
-<img src="https://us-central1-trackgit-analytics.cloudfunctions.net/token/ping/kxp25bztcr6upxh3s6fk" alt="trackgit-views" />
 </a>
 
 ## Installation
