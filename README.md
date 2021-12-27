@@ -1,9 +1,6 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://docs.juliahub.com/ScrapeSEC/bPAC8/0.5.1/)
 [![CI](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml)
 
-<a href="https://trackgit.com">
-</a>
-
 ## Installation
 
 ```julia
@@ -47,3 +44,8 @@ download_metadata_files(2012, 2020)
 create_main_index()
 get_quarterly_filings("../metadata/main_idx.tsv"; filing_types=["10-K", ])
 ```
+
+
+<a href="https://trackgit.com">
+<img src="https://us-central1-trackgit-analytics.cloudfunctions.net/token/ping/kxp25bztcr6upxh3s6fk" alt="trackgit-views" />
+</a>
