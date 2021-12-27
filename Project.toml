@@ -1,7 +1,7 @@
 name = "ScrapeSEC"
 uuid = "856806e7-be2f-4540-8165-3a51303b7af0"
 authors = ["tylerjthomas9 <tylerjthomas9@gmail.com>"]
-version = "0.5.1"
+version = "0.5.2"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -24,4 +24,4 @@ SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["SHA", "Test"]
+test = ["Test"]
