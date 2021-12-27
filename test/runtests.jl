@@ -1,5 +1,4 @@
 using ScrapeSEC
-using SHA
 using Test
 
 tests = ["download_metadata",
