@@ -1,5 +1,6 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://docs.juliahub.com/ScrapeSEC/bPAC8/0.5.2/)
 [![CI](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml)
+ [![ScrapeSEC Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/ScrapeSEC)](https://pkgs.genieframework.com?packages=ScrapeSEC)
 <a href="https://trackgit.com">
 <img src="https://us-central1-trackgit-analytics.cloudfunctions.net/token/ping/kxp25bztcr6upxh3s6fk" alt="trackgit-views" />
 </a>
