@@ -2,6 +2,7 @@
 [![CI](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml)
  [![ScrapeSEC Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/ScrapeSEC)](https://pkgs.genieframework.com?packages=ScrapeSEC)
 
+# ScrapeSEC.jl
 
 ## Installation
 
