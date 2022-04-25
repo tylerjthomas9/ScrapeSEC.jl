@@ -1,6 +1,7 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://docs.juliahub.com/ScrapeSEC/)
 [![CI](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml)
- [![ScrapeSEC Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/ScrapeSEC)](https://pkgs.genieframework.com?packages=ScrapeSEC)
+ [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
+
 
 # ScrapeSEC.jl
 

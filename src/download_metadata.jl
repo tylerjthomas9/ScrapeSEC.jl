@@ -11,11 +11,18 @@ Parameters
 
 Returns: Vector of metadata urls
 """
-function get_metadata_urls(time_periods::Vector{Tuple{Int64, Int64}})::Vector{String}
+function get_metadata_urls(time_periods::Vector{Tuple{Int64,Int64}})::Vector{String}
 
     # get urls for all time get_time_periods
     edgar_prefix = "https://www.sec.gov/Archives/"
-    urls = [edgar_prefix * "edgar/full-index/"*string(i[1])*"/QTR"*string(i[2])*"/master.zip" for i in time_periods]
+    urls = [
+        edgar_prefix *
+        "edgar/full-index/" *
+        string(i[1]) *
+        "/QTR" *
+        string(i[2]) *
+        "/master.zip" for i in time_periods
+    ]
 
     return urls
 end
@@ -33,20 +40,29 @@ Parameters
 * skip_file: If true, existing files will be skipped
 * verbose: Print out log 
 """
-function download_metadata(url::String; dest::String, skip_file=false::Bool, verbose=false::Bool)
-    
+function download_metadata(
+    url::String;
+    dest::String,
+    skip_file = false::Bool,
+    verbose = false::Bool,
+)
+
     # get full file path for download
     full_file = split(url, "/")[end-2] * "-" * split(url, "/")[end-1] * ".tsv"
     full_file = joinpath(dest, full_file)
-    if verbose; println(full_file); end
-    
+    if verbose
+        println(full_file)
+    end
+
     #TODO: unique temp files, so we can async download metadata
     temp_file = "main.idx"
     temp_zip = "main.zip"
 
     # check if we skip the download
     if isfile(full_file) & skip_file
-        if verbose; println("Skipping " * full_file); end
+        if verbose
+            println("Skipping " * full_file)
+        end
         return
     end
 
@@ -55,8 +71,8 @@ function download_metadata(url::String; dest::String, skip_file=false::Bool, ver
     zarchive = ZipFile.Reader(temp_zip)
     for f in zarchive.files
         @assert f.name == "master.idx"
-        out = open(temp_file,"w")
-        write(out,read(f,String))
+        out = open(temp_file, "w")
+        write(out, read(f, String))
         close(out)
     end
     close(zarchive)
@@ -98,20 +114,31 @@ Parameters
 * skip_file: If true, existing files will be skipped
 * verbose: Print out log
 """
-function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
-                        quarters=[1, 2, 3, 4]::Vector{Int64},
-                        skip_file=false::Bool, 
-                        dest="../metadata/"::String, 
-                        verbose=false::Bool)
+function download_metadata_files(
+    start_year::Int64,
+    end_year = nothing::Union{Int64,Nothing};
+    quarters = [1, 2, 3, 4]::Vector{Int64},
+    skip_file = false::Bool,
+    dest = "../metadata/"::String,
+    verbose = false::Bool,
+)
 
 
     # verify download_rate is valid (less than 10 requests per second, more than 0)
     if download_rate > 10
         download_rate = 10
-        println("download_rate of more than 10 per second(", download_rate, ") is not valid. download_rate has been set to 10/second.")
+        println(
+            "download_rate of more than 10 per second(",
+            download_rate,
+            ") is not valid. download_rate has been set to 10/second.",
+        )
     elseif download_rate < 1
         download_rate = 1
-        println("download_rate of less than 1 per second(", download_rate, ") is not valid. download_rate has been set to 1/second.")
+        println(
+            "download_rate of less than 1 per second(",
+            download_rate,
+            ") is not valid. download_rate has been set to 1/second.",
+        )
     end
 
     # create download folder if needed
@@ -119,29 +146,31 @@ function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int6
     if !isdir(dest)
         mkdir(dest)
     end
-    
+
     # get current year, quarter to prevent errors trying to get future data
     current_date = Dates.now()
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
-    
+
     # set end year to current year if no year is specified
     if end_year == nothing
         end_year = current_year
     end
-    
-    
+
+
     # get an array of dates to download metadata
     years = collect(start_year:end_year)
-    time_periods = [(y, q) for y in years for q in quarters if (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)]
-    
+    time_periods = [
+        (y, q) for y in years for q in quarters if
+        (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
+    ]
+
     # get download urls
     urls = get_metadata_urls(time_periods)
 
     # download metadata files
-    @showprogress 1 "Downloading Metadata..."  for idx in eachindex(urls)
-        download_metadata(urls[idx]; dest=dest, 
-                    skip_file=skip_file, verbose=verbose)
+    @showprogress 1 "Downloading Metadata..." for idx in eachindex(urls)
+        download_metadata(urls[idx]; dest = dest, skip_file = skip_file, verbose = verbose)
     end
 
     return
