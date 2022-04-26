@@ -29,33 +29,6 @@ function download_filing(file_name::String, new_file::String, dest::String)
     return
 end
 
-"""
-    function get_metadata_files(
-        time_periods::Vector{Tuple{Int64, Int64}}, 
-        metadata_dest::String
-    )::Vector{String}
-
-Creates an array of file paths of the metadata files
-
-Parameters
-* time_periods: Vector of time periods (year, quarter) to get metadata files Vector{Tuple{year, quarter}}
-* metadata_dest: Directory where metadata is stored
-
-Returns: Vector of metadata file paths
-"""
-function get_metadata_files(
-    time_periods::Vector{Tuple{Int64,Int64}},
-    metadata_dest::String,
-)::Vector{String}
-
-    # get file paths for all time get_time_periods
-    file_paths = [
-        joinpath(metadata_dest, string(i[1]) * "/QTR" * string(i[2]) * "/master.zip")
-        for i in time_periods
-    ]
-
-    return file_paths
-end
 
 """
     function get_quarterly_filings(
@@ -184,7 +157,7 @@ function get_quarterly_filings(
         start_year,
         end_year;
         quarters = quarters,
-        download_rate = download_rate,
+        #download_rate = download_rate,
         dest = metadata_dest,
         skip_file = skip_metadata_file,
     )

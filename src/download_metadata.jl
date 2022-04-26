@@ -123,24 +123,6 @@ function download_metadata_files(
     verbose = false::Bool,
 )
 
-
-    # verify download_rate is valid (less than 10 requests per second, more than 0)
-    if download_rate > 10
-        download_rate = 10
-        println(
-            "download_rate of more than 10 per second(",
-            download_rate,
-            ") is not valid. download_rate has been set to 10/second.",
-        )
-    elseif download_rate < 1
-        download_rate = 1
-        println(
-            "download_rate of less than 1 per second(",
-            download_rate,
-            ") is not valid. download_rate has been set to 1/second.",
-        )
-    end
-
     # create download folder if needed
     println("Metadata Destination:  " * dest)
     if !isdir(dest)
