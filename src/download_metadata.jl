@@ -1,8 +1,8 @@
 
 """
-    function get_metadata_urls(
-        time_periods::Vector{Tuple{Int64, Int64}}
-    )::Vector{String}
+function get_metadata_urls(
+    time_periods::Vector{Tuple{Int64, Int64}}
+)::Vector{String}
 
 Creates an array of URLs for the metadata files
 
@@ -28,9 +28,9 @@ function get_metadata_urls(time_periods::Vector{Tuple{Int64,Int64}})::Vector{Str
 end
 
 """
-    function download_metadata(url::String; dest::String, 
-        skip_file=false::Bool, verbose=false::Bool
-    )
+function download_metadata(url::String; dest::String, 
+    skip_file=false::Bool, verbose=false::Bool
+)
 
 Download filing metadata CSV file
 
@@ -96,14 +96,15 @@ function download_metadata(
     return
 end
 
+
 """
-    function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
-        quarters=[1, 2, 3, 4]::Vector{Int64},
-        skip_file=false::Bool, 
-        dest="../metadata/"::String, 
-        verbose=false::Bool,
-        download_rate=10::Int
-    )
+function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
+    quarters=[1, 2, 3, 4]::Vector{Int64},
+    skip_file=false::Bool, 
+    dest="./metadata/"::String, 
+    verbose=false::Bool,
+    download_rate=10::Int
+)
 
 Download all metadata files over a time range
 
@@ -119,7 +120,7 @@ function download_metadata_files(
     end_year = nothing::Union{Int64,Nothing};
     quarters = [1, 2, 3, 4]::Vector{Int64},
     skip_file = false::Bool,
-    dest = "../metadata/"::String,
+    dest = "./metadata/"::String,
     verbose = false::Bool,
 )
 
@@ -133,11 +134,6 @@ function download_metadata_files(
     current_date = Dates.now()
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
-
-    # set end year to current year if no year is specified
-    if end_year == nothing
-        end_year = current_year
-    end
 
 
     # get an array of dates to download metadata
@@ -157,3 +153,18 @@ function download_metadata_files(
 
     return
 end
+
+download_metadata_files(
+    start_year::Int64;
+    quarters = [1, 2, 3, 4]::Vector{Int64},
+    skip_file = false::Bool,
+    dest = "./metadata/"::String,
+    verbose = false::Bool,
+) = download_metadata_files(
+    start_year,
+    start_year;
+    quarters = quarters,
+    skip_file = skip_file,
+    dest = dest,
+    verbose = verbose,
+)

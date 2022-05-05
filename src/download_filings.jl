@@ -1,8 +1,8 @@
 
 """
-    function download_filing(file_name::String, 
-        new_file::String, dest::String
-    )
+function download_filing(file_name::String, 
+    new_file::String, dest::String
+)
 
 Download filing from https://www.sec.gov/Archives/
 
@@ -31,13 +31,13 @@ end
 
 
 """
-    function get_quarterly_filings(
-        metadata_file::String; 
-        dest="../data/"::String, 
-        filing_types=["10-K", ]::Vector{String}, 
-        download_rate=10::Int, 
-        skip_file=true::Bool
-    )
+function get_quarterly_filings(
+    metadata_file::String; 
+    dest="./data/"::String, 
+    filing_types=["10-K", ]::Vector{String}, 
+    download_rate=10::Int, 
+    skip_file=true::Bool
+)
 
 Get quarterly filings from https://www.sec.gov/Archives/ using a metadata file
 
@@ -50,7 +50,7 @@ Parameters
 """
 function get_quarterly_filings(
     metadata_file::String;
-    dest = "../data/"::String,
+    dest = "./data/"::String,
     filing_types = ["10-K"]::Vector{String},
     download_rate = 10::Int,
     skip_file = true::Bool,
@@ -98,17 +98,17 @@ end
 
 
 """
-    function get_quarterly_filings(
-        start_year::Int, 
-        end_year::Int; 
-        quarters=[1,2,3,4]::Vector{Int}, 
-        dest="../data/"::String, 
-        filing_types=["10-K", ]::Vector{String}, 
-        download_rate=10::Int, 
-        metadata_dest="../metadata/"::String,
-        skip_file=true::Bool, 
-        skip_metadata_file=true::Bool
-    )
+function get_quarterly_filings(
+    start_year::Int, 
+    end_year::Int; 
+    quarters=[1,2,3,4]::Vector{Int}, 
+    dest="./data/"::String, 
+    filing_types=["10-K", ]::Vector{String}, 
+    download_rate=10::Int, 
+    metadata_dest="./metadata/"::String,
+    skip_file=true::Bool, 
+    skip_metadata_file=true::Bool
+)
 
 Get quarterly filings from https://www.sec.gov/Archives/
 
@@ -127,10 +127,10 @@ function get_quarterly_filings(
     start_year::Int,
     end_year::Int;
     quarters = [1, 2, 3, 4]::Vector{Int},
-    dest = "../data/"::String,
+    dest = "./data/"::String,
     filing_types = ["10-K"]::Vector{String},
     download_rate = 10::Int,
-    metadata_dest = "../metadata/"::String,
+    metadata_dest = "./metadata/"::String,
     skip_file = true::Bool,
     skip_metadata_file = true::Bool,
 )
