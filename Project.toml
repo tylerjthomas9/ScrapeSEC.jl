@@ -1,7 +1,7 @@
 name = "ScrapeSEC"
 uuid = "856806e7-be2f-4540-8165-3a51303b7af0"
 authors = ["tylerjthomas9 <tylerjthomas9@gmail.com>"]
-version = "0.5.3"
+version = "0.6.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
