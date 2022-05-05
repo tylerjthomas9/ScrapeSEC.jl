@@ -48,5 +48,5 @@ Download filing metadata for 2012-2020, create a main index file, and download 1
 using ScrapeSEC
 download_metadata_files(2012, 2020)
 create_main_index()
-get_quarterly_filings("../metadata/main_idx.tsv"; filing_types=["10-K", ])
+get_quarterly_filings("./metadata/main_idx.tsv"; filing_types=["10-K", ])
 ```
