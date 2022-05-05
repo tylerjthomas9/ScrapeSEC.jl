@@ -1,7 +1,7 @@
 
 """
-    function create_main_index(metadata_folder="../metadata/"::String, 
-        main_file="../metadata/main_idx.tsv"::String
+    function create_main_index(metadata_folder="./metadata/"::String, 
+        main_file="./metadata/main_idx.tsv"::String
     )
 
 Create main index TSV file by combining all metadata files
@@ -12,8 +12,8 @@ Parameters
 
 """
 function create_main_index(
-    metadata_folder = "../metadata/"::String,
-    main_file = "../metadata/main_idx.tsv"::String,
+    metadata_folder = "./metadata/"::String,
+    main_file = "./metadata/main_idx.tsv"::String,
 )
 
     # Import all csv files into a dataframe
