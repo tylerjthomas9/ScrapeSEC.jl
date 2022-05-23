@@ -1,14 +1,16 @@
 
 """
-    function create_main_index(metadata_folder="./metadata/"::String, 
-        main_file="./metadata/main_idx.tsv"::String
-    )
+```julia
+function create_main_index(metadata_folder="./metadata/"::String, 
+    main_file="./metadata/main_idx.tsv"::String
+)
+```
 
 Create main index TSV file by combining all metadata files
 
 Parameters
-* metadata_folder: Folder where metadata TSVs are stored
-* main_file: TSV file name for combined metadata
+* `metadata_folder`: Folder where metadata TSVs are stored
+* `main_file`: TSV file name for combined metadata
 
 """
 function create_main_index(

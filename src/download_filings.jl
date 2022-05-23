@@ -1,14 +1,16 @@
 
 """
+```julia
 function download_filing(file_name::String, 
     new_file::String, dest::String
 )
+```
 
 Download filing from https://www.sec.gov/Archives/
 
 Parameters
-* file_name: SEC file name
-* new_file: new local file
+* `file_name`: SEC file name
+* `new_file`: new local file
 """
 function download_filing(file_name::String, new_file::String, dest::String)
     # get filing from SEC
@@ -31,6 +33,7 @@ end
 
 
 """
+```julia
 function get_quarterly_filings(
     metadata_file::String; 
     dest="./data/"::String, 
@@ -38,15 +41,16 @@ function get_quarterly_filings(
     download_rate=10::Int, 
     skip_file=true::Bool
 )
+```
 
 Get quarterly filings from https://www.sec.gov/Archives/ using a metadata file
 
 Parameters
-* metadata_file: CSV file with filing metadata
-* dest: Destination folder for downloaded filings
-* filing_types: Types of filings to download (eg. ["10-K", "10-Q"])
-* download_rate: Number of filings to download every second (limit=10)
-* skip_file: If true, existing files will be skipped
+* `metadata_file`: CSV file with filing metadata
+* `dest`: Destination folder for downloaded filings
+* `filing_types`: Types of filings to download (eg. ["10-K", "10-Q"])
+* `download_rate`: Number of filings to download every second (limit=10)
+* `skip_file`: If true, existing files will be skipped
 """
 function get_quarterly_filings(
     metadata_file::String;
@@ -98,6 +102,7 @@ end
 
 
 """
+```julia
 function get_quarterly_filings(
     start_year::Int, 
     end_year::Int; 
@@ -109,19 +114,20 @@ function get_quarterly_filings(
     skip_file=true::Bool, 
     skip_metadata_file=true::Bool
 )
+```
 
 Get quarterly filings from https://www.sec.gov/Archives/
 
 Parameters
-* start_year: First year to download filings
-* end_year: Last year to download filings
-* quarters: Quarters to download filings from
-* dest: Destination folder for downloaded filings
-* filing_types: Types of filings to download (eg. ["10-K", "10-Q"])
-* download_rate: Number of filings to download every second (limit=10)
-* metadata_dest: Directory to store metadata files
-* skip_file: If true, existing files will be skipped
-* skip_metadata_file: If true, existing metadata files will be skipped
+* `start_year`: First year to download filings
+* `end_year`: Last year to download filings
+* `quarters`: Quarters to download filings from
+* `dest`: Destination folder for downloaded filings
+* `filing_types`: Types of filings to download (eg. ["10-K", "10-Q"])
+* `download_rate`: Number of filings to download every second (limit=10)
+* `metadata_dest`: Directory to store metadata files
+* `skip_file`: If true, existing files will be skipped
+* `skip_metadata_file`: If true, existing metadata files will be skipped
 """
 function get_quarterly_filings(
     start_year::Int,
