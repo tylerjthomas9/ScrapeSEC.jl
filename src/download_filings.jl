@@ -15,7 +15,7 @@ Parameters
 function download_filing(file_name::String, new_file::String, dest::String)
     # get filing from SEC
     full_url = "https://www.sec.gov/Archives/" * file_name
-    text = HTTP.get(full_url).body
+    text = HTTP.get(full_url).body::String
 
     # create company folder
     company_folder = joinpath(dest, split(new_file, "/")[end-1])
