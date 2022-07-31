@@ -10,13 +10,13 @@ using Term.Progress
 import ZipFile
 
 const progress_bar_columns = [
-                                Progress.DescriptionColumn, 
-                                Progress.SeparatorColumn, 
-                                Progress.ProgressColumn, 
-                                Progress.CompletedColumn, 
-                                Progress.SeparatorColumn, 
-                                Progress.ETAColumn
-                            ]
+    Progress.DescriptionColumn,
+    Progress.SeparatorColumn,
+    Progress.ProgressColumn,
+    Progress.CompletedColumn,
+    Progress.SeparatorColumn,
+    Progress.ETAColumn,
+]
 
 # source files
 include("download_metadata.jl")

@@ -18,7 +18,7 @@ end
         quarters = [4],
         dest = "./temp/",
         metadata_dest = "./metadata/",
-        running_tests=true
+        running_tests = true,
     )
     @test isfile("./metadata/1994-QTR4.tsv")
     @test isfile("./temp/3146/0000950144-94-002172.txt")

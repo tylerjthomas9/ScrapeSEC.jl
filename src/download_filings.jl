@@ -66,10 +66,10 @@ function download_filings(
     filing_types = ["10-K"]::Vector{String},
     download_rate = 10::Int,
     skip_file = true::Bool,
-    pbar=ProgressBar()::pbar,
-    stop_pbar=true::Bool,
-    pbar_desc="Downloading Filings"::string,
-    running_tests=false::Bool
+    pbar = ProgressBar()::pbar,
+    stop_pbar = true::Bool,
+    pbar_desc = "Downloading Filings"::string,
+    running_tests = false::Bool,
 )
 
     # verify download_rate is valid (less than 10 requests per second, more than 0)
@@ -94,7 +94,7 @@ function download_filings(
     sleep_time = 1 / download_rate
 
     # setup progress bar
-    job = addjob!(pbar; N=size(df, 1), description=pbar_desc)
+    job = addjob!(pbar; N = size(df, 1), description = pbar_desc)
     start!(pbar)
     for row in eachrow(df)
         update!(job)
@@ -162,7 +162,7 @@ function download_filings(
     metadata_dest = "./metadata/"::String,
     skip_file = true::Bool,
     skip_metadata_file = true::Bool,
-    running_tests=false::Bool
+    running_tests = false::Bool,
 )
 
     # get current year, quarter to prevent errors trying to get future data
@@ -193,8 +193,12 @@ function download_filings(
 
 
     # download all quarterly filings
-    pbar = ProgressBar(columns=progress_bar_columns)
-    job = addjob!(pbar; N=size(time_periods, 1), description="Iterating Over Time Periods...")
+    pbar = ProgressBar(columns = progress_bar_columns)
+    job = addjob!(
+        pbar;
+        N = size(time_periods, 1),
+        description = "Iterating Over Time Periods...",
+    )
     start!(pbar)
     for t in time_periods
         update!(job)
@@ -205,10 +209,10 @@ function download_filings(
             filing_types = filing_types,
             download_rate = download_rate,
             skip_file = skip_file,
-            pbar=pbar,
-            stop_pbar=false,
-            pbar_desc="Downloading $(t[1]) Q$(t[2]) Filings",
-            running_tests=running_tests
+            pbar = pbar,
+            stop_pbar = false,
+            pbar_desc = "Downloading $(t[1]) Q$(t[2]) Filings",
+            running_tests = running_tests,
         )
         render(pbar)
     end
