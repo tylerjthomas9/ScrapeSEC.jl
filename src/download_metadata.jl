@@ -69,7 +69,7 @@ function download_metadata(
     end
 
     # download, unzip file
-    HTTP.download(url, temp_zip)
+    HTTP.download(url, temp_zip, update_period = Inf)
     zarchive = ZipFile.Reader(temp_zip)
     for f in zarchive.files
         @assert f.name == "master.idx"
@@ -151,9 +151,21 @@ function download_metadata_files(
     urls = get_metadata_urls(time_periods)
 
     # download metadata files
-    @showprogress 1 "Downloading Metadata..." for idx in eachindex(urls)
-        download_metadata(urls[idx]; dest = dest, skip_file = skip_file, verbose = verbose)
+    n_files = size(urls, 1)
+    pbar = ProgressBar(columns = progress_bar_columns)
+    job = addjob!(pbar; N = n_files, description = "Downloading Metadata CSVs...")
+    start!(pbar)
+    @inbounds for idx in eachindex(urls)
+        update!(job)
+        ScrapeSEC.download_metadata(
+            urls[idx];
+            dest = dest,
+            skip_file = skip_file,
+            verbose = verbose,
+        )
+        render(pbar)
     end
+    stop!(pbar)
 
     return
 end

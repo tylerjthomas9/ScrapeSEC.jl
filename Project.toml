@@ -1,22 +1,22 @@
 name = "ScrapeSEC"
 uuid = "856806e7-be2f-4540-8165-3a51303b7af0"
 authors = ["tylerjthomas9 <tylerjthomas9@gmail.com>"]
-version = "0.6.2"
+version = "0.7.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+Term = "22787eb5-b846-44ae-b979-8e399b8463ab"
 ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 
 [compat]
 CSV = "0.9, 0.10"
 DataFrames = "1"
 HTTP = "1"
-ProgressMeter = "1"
-ZipFile = "0.9"
+Term = "1"
+ZipFile = "0.9, 0.10"
 julia = "1"
 
 [extras]

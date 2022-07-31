@@ -6,8 +6,17 @@ using DataFrames
 import Dates
 import CSV
 import HTTP
-using ProgressMeter
+using Term.Progress
 import ZipFile
+
+const progress_bar_columns = [
+    Progress.DescriptionColumn,
+    Progress.SeparatorColumn,
+    Progress.ProgressColumn,
+    Progress.CompletedColumn,
+    Progress.SeparatorColumn,
+    Progress.ETAColumn,
+]
 
 # source files
 include("download_metadata.jl")
@@ -20,7 +29,7 @@ export
     create_main_index,
 
     # filing downloaders
-    get_quarterly_filings,
+    download_filings,
     download_filing
 
 end

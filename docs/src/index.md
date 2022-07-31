@@ -3,7 +3,8 @@
 # Installation
 From the Julia REPL:
 ```julia
-julia> ]add ScrapeSEC
+julia> ]  # enters the pkg interface
+pkg> add ScrapeSEC
 ```
 
 ```julia
@@ -12,7 +13,8 @@ julia> using Pkg; Pkg.add(ScrapeSEC)
 
 From source:
 ```julia
-julia> ]add https://github.com/tylerjthomas9/ScrapeSEC.jl
+julia> ]  # enters the pkg interface
+pkg> add https://github.com/tylerjthomas9/ScrapeSEC.jl
 ```
 
 ```julia
@@ -32,6 +34,6 @@ ScrapeSEC.create_main_index
 # Download Filings
 ```@docs
 download_filing
-get_quarterly_filings
+download_filings
 ```
 
