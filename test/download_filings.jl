@@ -10,9 +10,9 @@
 end
 
 
-@testset "get_quarterly_filings()" begin
+@testset "download_filings()" begin
 
-    get_quarterly_filings(
+    download_filings(
         1994,
         1994;
         quarters = [4],
@@ -22,7 +22,6 @@ end
     @test isfile("./metadata/1994-QTR4.tsv")
     @test isfile("./temp/3146/0000950144-94-002172.txt")
     rm("./metadata/1994-QTR4.tsv")
-    # TODO: Is it safe to clear the temp dir? I dont want to accidently delete peoples files who
-    # run the tests
+    # TODO: Is it safe to clear the temp dir? I dont want to accidently user files
 
 end

@@ -34,7 +34,7 @@ end
 
 """
 ```julia
-function get_quarterly_filings(
+function download_filings(
     metadata_file::String; 
     dest="./data/"::String, 
     filing_types=["10-K", ]::Vector{String}, 
@@ -43,7 +43,7 @@ function get_quarterly_filings(
 )
 ```
 
-Get quarterly filings from https://www.sec.gov/Archives/ using a metadata file
+Download quarterly filings from https://www.sec.gov/Archives/ using a metadata file
 
 Parameters
 * `metadata_file`: CSV file with filing metadata
@@ -51,13 +51,19 @@ Parameters
 * `filing_types`: Types of filings to download (eg. ["10-K", "10-Q"])
 * `download_rate`: Number of filings to download every second (limit=10)
 * `skip_file`: If true, existing files will be skipped
+* `pbar`: ProgressBar (Term.jl)
+* `stop_pbar`: If false, progress bar will not be stopped
+* `pbar_desc`: pbar Description
 """
-function get_quarterly_filings(
+function download_filings(
     metadata_file::String;
     dest = "./data/"::String,
     filing_types = ["10-K"]::Vector{String},
     download_rate = 10::Int,
     skip_file = true::Bool,
+    pbar=ProgressBar()::pbar,
+    stop_pbar=true::Bool,
+    pbar_desc="Downloading Filings"::string
 )
 
     # verify download_rate is valid (less than 10 requests per second, more than 0)
@@ -70,8 +76,6 @@ function get_quarterly_filings(
         )
     end
 
-    println("Metadata: " * metadata_file)
-
     df = CSV.File(metadata_file, delim = "|") |> DataFrame
     df = df[∈(filing_types).(df[!, "Form Type"]), :]
 
@@ -82,8 +86,12 @@ function get_quarterly_filings(
 
     # download filings at 10 requests per second
     sleep_time = 1 / download_rate
-    @showprogress 1 "Downloading Filings..." for row in eachrow(df)
 
+    # setup progress bar
+    job = addjob!(pbar; N=size(df, 1), description=pbar_desc)
+    start!(pbar)
+    for row in eachrow(df)
+        update!(job)
         # check if filing already has been downloaded
         full_file = joinpath(dest, replace(row["Filename"], "edgar/data/" => ""))
         if isfile(full_file) && skip_file
@@ -95,15 +103,18 @@ function get_quarterly_filings(
 
         # rest to throttle api hits to around 10/second
         sleep(sleep_time)
+        render(pbar)
+    end
+    if stop_pbar
+        stop!(pbar)
     end
 
     return
 end
 
-
 """
 ```julia
-function get_quarterly_filings(
+function download_filings(
     start_year::Int, 
     end_year::Int; 
     quarters=[1,2,3,4]::Vector{Int}, 
@@ -116,7 +127,7 @@ function get_quarterly_filings(
 )
 ```
 
-Get quarterly filings from https://www.sec.gov/Archives/
+Download quarterly filings from https://www.sec.gov/Archives/
 
 Parameters
 * `start_year`: First year to download filings
@@ -129,7 +140,7 @@ Parameters
 * `skip_file`: If true, existing files will be skipped
 * `skip_metadata_file`: If true, existing metadata files will be skipped
 """
-function get_quarterly_filings(
+function download_filings(
     start_year::Int,
     end_year::Int;
     quarters = [1, 2, 3, 4]::Vector{Int},
@@ -163,26 +174,31 @@ function get_quarterly_filings(
         start_year,
         end_year;
         quarters = quarters,
-        #download_rate = download_rate,
         dest = metadata_dest,
         skip_file = skip_metadata_file,
     )
 
 
     # download all quarterly filings
-    file_paths = [
-        joinpath(metadata_dest, string(t[1]) * "-QTR" * string(t[2]) * ".tsv") for
-        t in time_periods
-    ]
-    for file in file_paths
-        get_quarterly_filings(
+    pbar = ProgressBar(columns=progress_bar_columns)
+    job = addjob!(pbar; N=size(time_periods, 1), description="Iterating Over Time Periods...")
+    start!(pbar)
+    for t in time_periods
+        update!(job)
+        file = joinpath(metadata_dest, string(t[1]) * "-QTR" * string(t[2]) * ".tsv")
+        download_filings(
             file;
             dest = dest,
             filing_types = filing_types,
             download_rate = download_rate,
             skip_file = skip_file,
+            pbar=pbar,
+            stop_pbar=false,
+            pbar_desc="Downloading $(t[1]) Q$(t[2]) Filings"
         )
+        render(pbar)
     end
+    stop!(pbar)
 
     return
 end
