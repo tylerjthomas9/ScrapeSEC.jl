@@ -15,7 +15,7 @@ Parameters
 function download_filing(file_name::String, new_file::String, dest::String)
     # get filing from SEC
     full_url = "https://www.sec.gov/Archives/" * file_name
-    text = HTTP.get(full_url).body::String
+    text = HTTP.get(full_url).body
 
     # create company folder
     company_folder = joinpath(dest, split(new_file, "/")[end-1])
@@ -39,7 +39,11 @@ function download_filings(
     dest="./data/"::String, 
     filing_types=["10-K", ]::Vector{String}, 
     download_rate=10::Int, 
-    skip_file=true::Bool
+    skip_file=true::Bool,
+    pbar=ProgressBar()::pbar,
+    stop_pbar=true::Bool,
+    pbar_desc="Downloading Filings"::string,
+    running_tests=false::Bool
 )
 ```
 
@@ -54,6 +58,7 @@ Parameters
 * `pbar`: ProgressBar (Term.jl)
 * `stop_pbar`: If false, progress bar will not be stopped
 * `pbar_desc`: pbar Description
+* `runnings_tests`: If true, only downloads one file
 """
 function download_filings(
     metadata_file::String;
@@ -63,7 +68,8 @@ function download_filings(
     skip_file = true::Bool,
     pbar=ProgressBar()::pbar,
     stop_pbar=true::Bool,
-    pbar_desc="Downloading Filings"::string
+    pbar_desc="Downloading Filings"::string,
+    running_tests=false::Bool
 )
 
     # verify download_rate is valid (less than 10 requests per second, more than 0)
@@ -104,6 +110,10 @@ function download_filings(
         # rest to throttle api hits to around 10/second
         sleep(sleep_time)
         render(pbar)
+
+        if running_tests
+            break
+        end
     end
     if stop_pbar
         stop!(pbar)
@@ -123,7 +133,8 @@ function download_filings(
     download_rate=10::Int, 
     metadata_dest="./metadata/"::String,
     skip_file=true::Bool, 
-    skip_metadata_file=true::Bool
+    skip_metadata_file=true::Bool,
+    running_tests=false::Bool
 )
 ```
 
@@ -139,6 +150,7 @@ Parameters
 * `metadata_dest`: Directory to store metadata files
 * `skip_file`: If true, existing files will be skipped
 * `skip_metadata_file`: If true, existing metadata files will be skipped
+* `runnings_tests`: If true, only downloads one file
 """
 function download_filings(
     start_year::Int,
@@ -150,6 +162,7 @@ function download_filings(
     metadata_dest = "./metadata/"::String,
     skip_file = true::Bool,
     skip_metadata_file = true::Bool,
+    running_tests=false::Bool
 )
 
     # get current year, quarter to prevent errors trying to get future data
@@ -194,7 +207,8 @@ function download_filings(
             skip_file = skip_file,
             pbar=pbar,
             stop_pbar=false,
-            pbar_desc="Downloading $(t[1]) Q$(t[2]) Filings"
+            pbar_desc="Downloading $(t[1]) Q$(t[2]) Filings",
+            running_tests=running_tests
         )
         render(pbar)
     end
