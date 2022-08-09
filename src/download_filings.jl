@@ -45,7 +45,7 @@ function download_filings(
 )
 ```
 
-Download all filings from a metadata DataFrame
+Download all filings from a Vector of file names
 
 Parameters
 * `filenames`: Vector of file names to download
