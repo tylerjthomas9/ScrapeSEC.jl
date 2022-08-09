@@ -169,14 +169,16 @@ function download_filings(
     df = CSV.File(metadata_file, delim = "|") |> DataFrame
     df = df[∈(filing_types).(df[!, "Form Type"]), :]
 
-    download_filings(df.Filename;
-                    dest=dest,
-                    download_rate=download_rate,
-                    skip_file=skip_file,
-                    pbar=pbar,
-                    stop_pbar=stop_pbar,
-                    pbar_desc=pbar_desc,
-                    running_tests=running_tests)
+    download_filings(
+        df.Filename;
+        dest = dest,
+        download_rate = download_rate,
+        skip_file = skip_file,
+        pbar = pbar,
+        stop_pbar = stop_pbar,
+        pbar_desc = pbar_desc,
+        running_tests = running_tests,
+    )
 
     return
 end
