@@ -31,6 +31,90 @@ function download_filing(file_name::String, new_file::String, dest::String)
     return
 end
 
+"""
+```julia
+function download_filings(
+    filenames::Vector;
+    dest = "./data/"::String,
+    download_rate = 10::Int,
+    skip_file = true::Bool,
+    pbar = ProgressBar()::pbar,
+    stop_pbar = true::Bool,
+    pbar_desc = "Downloading Filings"::string,
+    running_tests = false::Bool,
+)
+```
+
+Download all filings from a metadata DataFrame
+
+Parameters
+* `filenames`: Vector of file names to download
+* `dest`: Destination folder for downloaded filings
+* `download_rate`: Number of filings to download every second (limit=10)
+* `skip_file`: If true, existing files will be skipped
+* `pbar`: ProgressBar (Term.jl)
+* `stop_pbar`: If false, progress bar will not be stopped
+* `pbar_desc`: pbar Description
+* `runnings_tests`: If true, only downloads one file
+"""
+function download_filings(
+    filenames::Vector;
+    dest = "./data/"::String,
+    download_rate = 10::Int,
+    skip_file = true::Bool,
+    pbar = ProgressBar()::pbar,
+    stop_pbar = true::Bool,
+    pbar_desc = "Downloading Filings"::string,
+    running_tests = false::Bool,
+)
+
+    # verify download_rate is valid (less than 10 requests per second, more than 0)
+    if download_rate > 10
+        download_rate = 10
+        println(
+            "download_rate of more than 10 per second(",
+            download_rate,
+            ") is not valid. download_rate has been set to 10/second.",
+        )
+    end
+
+    # create download folder if needed
+    if !isdir(dest)
+        mkdir(dest)
+    end
+
+    # download filings at 10 requests per second
+    sleep_time = 1 / download_rate
+
+    # setup progress bar
+    job = addjob!(pbar; N = size(filenames, 1), description = pbar_desc)
+    start!(pbar)
+    for file in filenames
+        update!(job)
+        # check if filing already has been downloaded
+        full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
+        if isfile(full_file) && skip_file
+            continue
+        end
+
+        # download new filing
+        @async download_filing(file, full_file, dest)
+
+        # rest to throttle api hits to around 10/second
+        sleep(sleep_time)
+        render(pbar)
+
+        if running_tests
+            break
+        end
+    end
+    if stop_pbar
+        stop!(pbar)
+    end
+
+    return
+end
+
 
 """
 ```julia
@@ -85,39 +169,14 @@ function download_filings(
     df = CSV.File(metadata_file, delim = "|") |> DataFrame
     df = df[∈(filing_types).(df[!, "Form Type"]), :]
 
-    # create download folder if needed
-    if !isdir(dest)
-        mkdir(dest)
-    end
-
-    # download filings at 10 requests per second
-    sleep_time = 1 / download_rate
-
-    # setup progress bar
-    job = addjob!(pbar; N = size(df, 1), description = pbar_desc)
-    start!(pbar)
-    for row in eachrow(df)
-        update!(job)
-        # check if filing already has been downloaded
-        full_file = joinpath(dest, replace(row["Filename"], "edgar/data/" => ""))
-        if isfile(full_file) && skip_file
-            continue
-        end
-
-        # download new filing
-        @async download_filing(row["Filename"], full_file, dest)
-
-        # rest to throttle api hits to around 10/second
-        sleep(sleep_time)
-        render(pbar)
-
-        if running_tests
-            break
-        end
-    end
-    if stop_pbar
-        stop!(pbar)
-    end
+    download_filings(df.Filename;
+                    dest=dest,
+                    download_rate=download_rate,
+                    skip_file=skip_file,
+                    pbar=pbar,
+                    stop_pbar=stop_pbar,
+                    pbar_desc=pbar_desc,
+                    running_tests=running_tests)
 
     return
 end
