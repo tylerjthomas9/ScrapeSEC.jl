@@ -49,3 +49,12 @@ download_metadata_files(2020, 2022)
 create_main_index()
 download_filings("./metadata/main_idx.tsv"; filing_types=["10-K", ])
 ```
+
+Download filings from a vector of filenames
+```julia
+using CSV
+using DataFrames
+using ScrapeSEC
+df = CSV.File(metadata_file, delim = "|") |> DataFrame
+download_filings(df.FileName)
+```
