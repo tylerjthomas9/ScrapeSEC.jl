@@ -141,7 +141,11 @@ function download_metadata_files(
 
 
     # get an array of dates to download metadata
-    years = collect(start_year:end_year)
+    if isnothing(end_year)
+        years = collect(start_year:start_year)
+    else
+        years = collect(start_year:end_year)
+    end
     time_periods = [
         (y, q) for y in years for q in quarters if
         (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
