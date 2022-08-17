@@ -90,7 +90,6 @@ function download_filings(
     job = addjob!(pbar; N = size(filenames, 1), description = pbar_desc)
     start!(pbar)
     for file in filenames
-        update!(job)
         # check if filing already has been downloaded
         full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
         if isfile(full_file) && skip_file
@@ -101,6 +100,7 @@ function download_filings(
         @async download_filing(file, full_file, dest)
 
         # rest to throttle api hits to around 10/second
+        update!(job)
         sleep(sleep_time)
         render(pbar)
 
@@ -262,7 +262,6 @@ function download_filings(
     )
     start!(pbar)
     for t in time_periods
-        update!(job)
         file = joinpath(metadata_dest, string(t[1]) * "-QTR" * string(t[2]) * ".tsv")
         download_filings(
             file;
@@ -275,6 +274,7 @@ function download_filings(
             pbar_desc = "Downloading $(t[1]) Q$(t[2]) Filings",
             running_tests = running_tests,
         )
+        update!(job)
         render(pbar)
     end
     stop!(pbar)
