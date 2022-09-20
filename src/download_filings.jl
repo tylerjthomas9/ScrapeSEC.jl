@@ -58,7 +58,7 @@ Parameters
 * `runnings_tests`: If true, only downloads one file
 """
 function download_filings(
-    filenames::Vector;
+    filenames::AbstractVector;
     dest = "./data/"::String,
     download_rate = 10::Int,
     skip_file = true::Bool,
