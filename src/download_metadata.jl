@@ -14,7 +14,6 @@ Returns: Vector of metadata urls
 """
 function get_metadata_urls(time_periods::Vector{Tuple{Int64,Int64}})::Vector{String}
 
-    # get urls for all time get_time_periods
     edgar_prefix = "https://www.sec.gov/Archives/"
     urls = [
         edgar_prefix *
@@ -49,7 +48,6 @@ function download_metadata(
     verbose = false::Bool,
 )
 
-    # get full file path for download
     full_file = split(url, "/")[end-2] * "-" * split(url, "/")[end-1] * ".tsv"
     full_file = joinpath(dest, full_file)
     if verbose
@@ -60,7 +58,6 @@ function download_metadata(
     temp_file = "main.idx"
     temp_zip = "main.zip"
 
-    # check if we skip the download
     if isfile(full_file) & skip_file
         if verbose
             println("Skipping " * full_file)
@@ -68,7 +65,6 @@ function download_metadata(
         return
     end
 
-    # download, unzip file
     HTTP.download(url, temp_zip, update_period = Inf)
     zarchive = ZipFile.Reader(temp_zip)
     for f in zarchive.files
@@ -80,13 +76,11 @@ function download_metadata(
     close(zarchive)
     rm(temp_zip)
 
-    # import unziped file for cleaning
     f = open(temp_file, "r")
     metadata = readlines(f)[10:end] # skip fluff at top
     close(f)
     rm(temp_file)
 
-    # save metadata file
     f = open(full_file, "w")
     for line in metadata
         if occursin("|", line) # skip "----------" line
@@ -128,19 +122,16 @@ function download_metadata_files(
     verbose = false::Bool,
 )
 
-    # create download folder if needed
     println("Metadata Destination:  " * dest)
     if !isdir(dest)
         mkdir(dest)
     end
 
-    # get current year, quarter to prevent errors trying to get future data
     current_date = Dates.now()
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
 
 
-    # get an array of dates to download metadata
     if isnothing(end_year)
         years = collect(start_year:start_year)
     else
@@ -151,10 +142,7 @@ function download_metadata_files(
         (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
     ]
 
-    # get download urls
     urls = get_metadata_urls(time_periods)
-
-    # download metadata files
     n_files = size(urls, 1)
     pbar = ProgressBar(columns = progress_bar_columns)
     job = addjob!(pbar; N = n_files, description = "Downloading Metadata CSVs...")
