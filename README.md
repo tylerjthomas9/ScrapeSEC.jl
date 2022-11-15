@@ -10,14 +10,14 @@
 
 ## Installation
 
-From the Julia REPL:
+From the Julia General Registry:
 ```julia
 julia> ]  # enters the pkg interface
 pkg> add ScrapeSEC
 ```
 
 ```julia
-julia> using Pkg; Pkg.add(ScrapeSEC)
+julia> using Pkg; Pkg.add("ScrapeSEC")
 ```
 
 From source:
