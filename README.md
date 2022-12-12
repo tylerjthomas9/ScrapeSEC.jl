@@ -58,3 +58,13 @@ using ScrapeSEC
 df = CSV.File(metadata_file, delim = "|") |> DataFrame
 download_filings(df.FileName)
 ```
+
+# Other Julia Financial Data Packages
+- [FredData.jl](https://github.com/micahjsmith/FredData.jl) - Federeral Reserve Economic Data (FRED). 
+- [MarketData.jl](https://github.com/JuliaQuant/MarketData.jl) - Yahoo Finance market data.
+- [YFinance.jl](https://github.com/eohne/YFinance.jl) - Yahoo Finance price, option, fundamental data.
+
+Not maintained:
+- [DailyTreasuryYieldCurve.jl](https://github.com/tbeason/DailyTreasuryYieldCurve.jl)
+- [FredApi.jl](https://github.com/markushhh/FredApi.jl) 
+
