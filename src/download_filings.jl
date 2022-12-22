@@ -37,7 +37,7 @@ function download_filings(
     skip_file = true::Bool,
     pbar = ProgressBar()::ProgressBar,
     stop_pbar = true::Bool,
-    pbar_desc = "Downloading Filings"::string,
+    pbar_desc = "Downloading Filings"::String,
     running_tests = false::Bool,
 )
 ```
@@ -61,7 +61,7 @@ function download_filings(
     skip_file = true::Bool,
     pbar = ProgressBar()::ProgressBar,
     stop_pbar = true::Bool,
-    pbar_desc = "Downloading Filings"::string,
+    pbar_desc = "Downloading Filings"::String,
     running_tests = false::Bool,
 )
     if download_rate > 10
@@ -116,7 +116,7 @@ function download_filings(
     skip_file=true::Bool,
     pbar=ProgressBar()::ProgressBar,
     stop_pbar=true::Bool,
-    pbar_desc="Downloading Filings"::string,
+    pbar_desc="Downloading Filings"::String,
     running_tests=false::Bool
 )
 ```
@@ -142,7 +142,7 @@ function download_filings(
     skip_file = true::Bool,
     pbar = ProgressBar()::ProgressBar,
     stop_pbar = true::Bool,
-    pbar_desc = "Downloading Filings"::string,
+    pbar_desc = "Downloading Filings"::String,
     running_tests = false::Bool,
 )
 
