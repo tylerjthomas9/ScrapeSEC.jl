@@ -136,7 +136,7 @@ function download_metadata_files(
 
     urls = get_metadata_urls(time_periods)
     n_files = size(urls, 1)
-    pbar = ProgressBar(; columns=:detailed)
+    pbar = ProgressBar(; )
     job = addjob!(pbar; N=n_files, description="Downloading Metadata CSVs...")
     start!(pbar)
     @inbounds for idx in eachindex(urls)
