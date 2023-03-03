@@ -1,9 +1,14 @@
+"""
+Function to return the text. Added this to allow custom text cleaning functions
+"""
+_pass_text(text) = text
 
 """
 ```julia
 function download_filing(file_name::String, 
-    new_file::String, dest::String
-)
+                        new_file::String, 
+                        dest::String;
+                        clean_text::Function)
 ```
 
 Download filing from https://www.sec.gov/Archives/
@@ -11,34 +16,39 @@ Download filing from https://www.sec.gov/Archives/
 Parameters
 * `file_name`: SEC file name
 * `new_file`: new local file
+* `dest`: destination folder
+* `clean_text`: function to clean text before writing to file
 """
-function download_filing(file_name::String, new_file::String, dest::String)
+function download_filing(
+    file_name::String, new_file::String, dest::String; clean_text::Function=_pass_text
+)
     full_url = "https://www.sec.gov/Archives/" * file_name
     text = HTTP.get(full_url).body
 
-    company_folder = joinpath(dest, split(new_file, "/")[end-1])
+    company_folder = joinpath(dest, split(new_file, "/")[end - 1])
     if !isdir(company_folder)
         mkdir(company_folder)
     end
 
     f = open(new_file, "w")
-    write(f, text)
+    write(f, clean_text(text))
     close(f)
 
-    return
+    return nothing
 end
 
 """
 ```julia
 function download_filings(
     filenames::Vector;
-    dest = "./data/"::String,
-    download_rate = 10::Int,
-    skip_file = true::Bool,
-    pbar = ProgressBar()::ProgressBar,
-    stop_pbar = true::Bool,
-    pbar_desc = "Downloading Filings"::String,
-    running_tests = false::Bool,
+    dest="./data/"::String,
+    download_rate=10::Int,
+    skip_file=true::Bool,
+    pbar=ProgressBar(; columns=:detailed)::ProgressBar,
+    stop_pbar=true::Bool,
+    pbar_desc="Downloading Filings"::String,
+    running_tests=false::Bool,
+    clean_text=nothing
 )
 ```
 
@@ -53,16 +63,18 @@ Parameters
 * `stop_pbar`: If false, progress bar will not be stopped
 * `pbar_desc`: pbar Description
 * `runnings_tests`: If true, only downloads one file
+* `clean_text`: function to clean text before writing to file
 """
 function download_filings(
     filenames::AbstractVector;
-    dest = "./data/"::String,
-    download_rate = 10::Int,
-    skip_file = true::Bool,
-    pbar = ProgressBar()::ProgressBar,
-    stop_pbar = true::Bool,
-    pbar_desc = "Downloading Filings"::String,
-    running_tests = false::Bool,
+    dest="./data/"::String,
+    download_rate=10::Int,
+    skip_file=true::Bool,
+    pbar=ProgressBar(; columns=:detailed)::ProgressBar,
+    stop_pbar=true::Bool,
+    pbar_desc="Downloading Filings"::String,
+    running_tests=false::Bool,
+    clean_text::Function=_pass_text,
 )
     if download_rate > 10
         download_rate = 10
@@ -80,7 +92,7 @@ function download_filings(
     # download filings at 10 requests per second
     sleep_time = 1 / download_rate
 
-    job = addjob!(pbar; N = size(filenames, 1), description = pbar_desc)
+    job = addjob!(pbar; N=size(filenames, 1), description=pbar_desc)
     start!(pbar)
     for file in filenames
         full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
@@ -88,7 +100,7 @@ function download_filings(
             continue
         end
 
-        @async download_filing(file, full_file, dest)
+        @async download_filing(file, full_file, dest; clean_text)
 
         update!(job)
         sleep(sleep_time)
@@ -102,9 +114,8 @@ function download_filings(
         stop!(pbar)
     end
 
-    return
+    return nothing
 end
-
 
 """
 ```julia
@@ -114,10 +125,11 @@ function download_filings(
     filing_types=["10-K", ]::Vector{String}, 
     download_rate=10::Int, 
     skip_file=true::Bool,
-    pbar=ProgressBar()::ProgressBar,
+    pbar=ProgressBar(; columns=:detailed)::ProgressBar,
     stop_pbar=true::Bool,
     pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool
+    running_tests=false::Bool,
+    clean_text=nothing
 )
 ```
 
@@ -133,19 +145,20 @@ Parameters
 * `stop_pbar`: If false, progress bar will not be stopped
 * `pbar_desc`: pbar Description
 * `runnings_tests`: If true, only downloads one file
+* `clean_text`: function to clean text before writing to file
 """
 function download_filings(
     metadata_file::String;
-    dest = "./data/"::String,
-    filing_types = ["10-K"]::Vector{String},
-    download_rate = 10::Int,
-    skip_file = true::Bool,
-    pbar = ProgressBar()::ProgressBar,
-    stop_pbar = true::Bool,
-    pbar_desc = "Downloading Filings"::String,
-    running_tests = false::Bool,
+    dest="./data/"::String,
+    filing_types=["10-K"]::Vector{String},
+    download_rate=10::Int,
+    skip_file=true::Bool,
+    pbar=ProgressBar(; columns=:detailed)::ProgressBar,
+    stop_pbar=true::Bool,
+    pbar_desc="Downloading Filings"::String,
+    running_tests=false::Bool,
+    clean_text::Function=_pass_text,
 )
-
     if download_rate > 10
         download_rate = 10
         println(
@@ -155,21 +168,22 @@ function download_filings(
         )
     end
 
-    df = CSV.File(metadata_file, delim = "|") |> DataFrame
+    df = DataFrame(CSV.File(metadata_file; delim="|"))
     df = df[∈(filing_types).(df[!, "Form Type"]), :]
 
     download_filings(
         df.Filename;
-        dest = dest,
-        download_rate = download_rate,
-        skip_file = skip_file,
-        pbar = pbar,
-        stop_pbar = stop_pbar,
-        pbar_desc = pbar_desc,
-        running_tests = running_tests,
+        dest=dest,
+        download_rate=download_rate,
+        skip_file=skip_file,
+        pbar=pbar,
+        stop_pbar=stop_pbar,
+        pbar_desc=pbar_desc,
+        running_tests=running_tests,
+        clean_text,
     )
 
-    return
+    return nothing
 end
 
 """
@@ -184,7 +198,8 @@ function download_filings(
     metadata_dest="./metadata/"::String,
     skip_file=true::Bool, 
     skip_metadata_file=true::Bool,
-    running_tests=false::Bool
+    running_tests=false::Bool,
+    clean_text=nothing
 )
 ```
 
@@ -201,20 +216,21 @@ Parameters
 * `skip_file`: If true, existing files will be skipped
 * `skip_metadata_file`: If true, existing metadata files will be skipped
 * `runnings_tests`: If true, only downloads one file
+* `clean_text`: function to clean text before writing to file
 """
 function download_filings(
     start_year::Int,
     end_year::Int;
-    quarters = [1, 2, 3, 4]::Vector{Int},
-    dest = "./data/"::String,
-    filing_types = ["10-K"]::Vector{String},
-    download_rate = 10::Int,
-    metadata_dest = "./metadata/"::String,
-    skip_file = true::Bool,
-    skip_metadata_file = true::Bool,
-    running_tests = false::Bool,
+    quarters=[1, 2, 3, 4]::Vector{Int},
+    dest="./data/"::String,
+    filing_types=["10-K"]::Vector{String},
+    download_rate=10::Int,
+    metadata_dest="./metadata/"::String,
+    skip_file=true::Bool,
+    skip_metadata_file=true::Bool,
+    running_tests=false::Bool,
+    clean_text::Function=_pass_text,
 )
-
     current_date = Dates.now()
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
@@ -225,42 +241,41 @@ function download_filings(
 
     years = collect(start_year:end_year)
     time_periods = [
-        (y, q) for y in years for q in quarters if
-        (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
+        (y, q) for y in years for
+        q in quarters if (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
     ]
 
     download_metadata_files(
         start_year,
         end_year;
-        quarters = quarters,
-        dest = metadata_dest,
-        skip_file = skip_metadata_file,
+        quarters=quarters,
+        dest=metadata_dest,
+        skip_file=skip_metadata_file,
     )
 
-    pbar = ProgressBar(columns = progress_bar_columns)
+    pbar = ProgressBar(; columns=progress_bar_columns)
     job = addjob!(
-        pbar;
-        N = size(time_periods, 1),
-        description = "Iterating Over Time Periods...",
+        pbar; N=size(time_periods, 1), description="Iterating Over Time Periods..."
     )
     start!(pbar)
     for t in time_periods
         file = joinpath(metadata_dest, string(t[1]) * "-QTR" * string(t[2]) * ".tsv")
         download_filings(
             file;
-            dest = dest,
-            filing_types = filing_types,
-            download_rate = download_rate,
-            skip_file = skip_file,
-            pbar = pbar,
-            stop_pbar = false,
-            pbar_desc = "Downloading $(t[1]) Q$(t[2]) Filings",
-            running_tests = running_tests,
+            dest=dest,
+            filing_types=filing_types,
+            download_rate=download_rate,
+            skip_file=skip_file,
+            pbar=pbar,
+            stop_pbar=false,
+            pbar_desc="Downloading $(t[1]) Q$(t[2]) Filings",
+            running_tests=running_tests,
+            clean_text,
         )
         update!(job)
         render(pbar)
     end
     stop!(pbar)
 
-    return
+    return nothing
 end

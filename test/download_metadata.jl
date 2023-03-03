@@ -14,12 +14,10 @@
 end
 
 @testset "download_metadata()" begin
-
     url = "https://www.sec.gov/Archives/edgar/full-index/1995/QTR1/master.zip"
     dest = "./"
     temp_file = "1995-QTR1.tsv"
-    ScrapeSEC.download_metadata(url; dest = dest)
+    ScrapeSEC.download_metadata(url; dest=dest)
     @test isfile(temp_file)
     rm(temp_file)
-
 end

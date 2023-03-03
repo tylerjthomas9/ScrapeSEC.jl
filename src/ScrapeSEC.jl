@@ -3,11 +3,11 @@ module ScrapeSEC
 
 # Dependencies
 using DataFrames
-import Dates
-import CSV
-import HTTP
+using Dates: Dates
+using CSV: CSV
+using HTTP: HTTP
 using Term.Progress
-import ZipFile
+using ZipFile: ZipFile
 
 const progress_bar_columns = [
     Progress.DescriptionColumn,
@@ -33,4 +33,3 @@ export
     download_filing
 
 end
-
