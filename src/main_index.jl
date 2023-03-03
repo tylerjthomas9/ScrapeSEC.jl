@@ -14,19 +14,16 @@ Parameters
 
 """
 function create_main_index(
-    metadata_folder = "./metadata/"::String,
-    main_file = "./metadata/main_idx.tsv"::String,
+    metadata_folder="./metadata/"::String, main_file="./metadata/main_idx.tsv"::String
 )
-
     metadata_files = [
-        i for i in readdir(metadata_folder; join = true) if
-        (i != main_file) & occursin(".tsv", i)
+        i for
+        i in readdir(metadata_folder; join=true) if (i != main_file) & occursin(".tsv", i)
     ]
-    df = reduce(vcat, [DataFrame(CSV.File(i, delim = "|")) for i in metadata_files])
+    df = reduce(vcat, [DataFrame(CSV.File(i; delim="|")) for i in metadata_files])
 
     df = df[.!nonunique(df), :]
-    CSV.write(main_file, df, delim = "|")
+    CSV.write(main_file, df; delim="|")
 
-    return
-
+    return nothing
 end

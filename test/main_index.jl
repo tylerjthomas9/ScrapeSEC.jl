@@ -16,11 +16,8 @@
     create_main_index("./", main_file)
     @test read(main_file, String) == "col1|col1_1\n1|2\n3|4\n"
 
-
     # remove temp files
     rm(temp_csv1)
     rm(temp_csv2)
     rm(main_file)
-
-
 end

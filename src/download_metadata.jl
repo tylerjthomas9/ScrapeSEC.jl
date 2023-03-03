@@ -13,7 +13,6 @@ Parameters
 Returns: Vector of metadata urls
 """
 function get_metadata_urls(time_periods::Vector{Tuple{Int64,Int64}})::Vector{String}
-
     edgar_prefix = "https://www.sec.gov/Archives/"
     urls = [
         edgar_prefix *
@@ -42,13 +41,9 @@ Parameters
 * `verbose`: Print out log 
 """
 function download_metadata(
-    url::String;
-    dest::String,
-    skip_file = false::Bool,
-    verbose = false::Bool,
+    url::String; dest::String, skip_file=false::Bool, verbose=false::Bool
 )
-
-    full_file = split(url, "/")[end-2] * "-" * split(url, "/")[end-1] * ".tsv"
+    full_file = split(url, "/")[end - 2] * "-" * split(url, "/")[end - 1] * ".tsv"
     full_file = joinpath(dest, full_file)
     if verbose
         println(full_file)
@@ -62,10 +57,10 @@ function download_metadata(
         if verbose
             println("Skipping " * full_file)
         end
-        return
+        return nothing
     end
 
-    HTTP.download(url, temp_zip, update_period = Inf)
+    HTTP.download(url, temp_zip; update_period=Inf)
     zarchive = ZipFile.Reader(temp_zip)
     for f in zarchive.files
         @assert f.name == "master.idx"
@@ -89,9 +84,8 @@ function download_metadata(
     end
     close(f)
 
-    return
+    return nothing
 end
-
 
 """
 ```julia
@@ -115,13 +109,12 @@ Parameters
 """
 function download_metadata_files(
     start_year::Int64,
-    end_year = nothing::Union{Int64,Nothing};
-    quarters = [1, 2, 3, 4]::Vector{Int64},
-    skip_file = false::Bool,
-    dest = "./metadata/"::String,
-    verbose = false::Bool,
+    end_year=nothing::Union{Int64,Nothing};
+    quarters=[1, 2, 3, 4]::Vector{Int64},
+    skip_file=false::Bool,
+    dest="./metadata/"::String,
+    verbose=false::Bool,
 )
-
     println("Metadata Destination:  " * dest)
     if !isdir(dest)
         mkdir(dest)
@@ -131,33 +124,29 @@ function download_metadata_files(
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
 
-
     if isnothing(end_year)
         years = collect(start_year:start_year)
     else
         years = collect(start_year:end_year)
     end
     time_periods = [
-        (y, q) for y in years for q in quarters if
-        (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
+        (y, q) for y in years for
+        q in quarters if (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
     ]
 
     urls = get_metadata_urls(time_periods)
     n_files = size(urls, 1)
-    pbar = ProgressBar(columns = progress_bar_columns)
-    job = addjob!(pbar; N = n_files, description = "Downloading Metadata CSVs...")
+    pbar = ProgressBar(; columns=:detailed)
+    job = addjob!(pbar; N=n_files, description="Downloading Metadata CSVs...")
     start!(pbar)
     @inbounds for idx in eachindex(urls)
         update!(job)
         ScrapeSEC.download_metadata(
-            urls[idx];
-            dest = dest,
-            skip_file = skip_file,
-            verbose = verbose,
+            urls[idx]; dest=dest, skip_file=skip_file, verbose=verbose
         )
         render(pbar)
     end
     stop!(pbar)
 
-    return
+    return nothing
 end
