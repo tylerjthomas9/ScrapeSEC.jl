@@ -11,7 +11,7 @@ end
     download_filings(
         1994,
         1994;
-        quarters=[4],
+        quarters=[3,4],
         dest="./temp/",
         metadata_dest="./metadata/",
         running_tests=true,
@@ -19,5 +19,4 @@ end
     @test isfile("./metadata/1994-QTR4.tsv")
     rm("./metadata/1994-QTR4.tsv")
     # TODO: Is it safe to clear the temp dir? I dont want to accidently user files
-
 end
