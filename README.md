@@ -59,6 +59,19 @@ df = CSV.File(metadata_file, delim = "|") |> DataFrame
 download_filings(df.FileName)
 ```
 
+# Citing
+
+IF you use ScrapeSEC.jl as part of your research, teaching, or other activities, we would be grateful if you could cite our work. 
+
+```
+@misc{ScrapeSEC.jlPackage,
+  author = {Tyler Thomas}
+  title = {ScrapeSEC.jl}
+  year = {2023}
+  url = {https://tylerjthomas9.github.io/ScrapeSEC.jl/}
+}
+```
+
 # Other Julia Financial Data Packages
 - [FredData.jl](https://github.com/micahjsmith/FredData.jl) - Federeral Reserve Economic Data (FRED). 
 - [MarketData.jl](https://github.com/JuliaQuant/MarketData.jl) - Yahoo Finance market data.
