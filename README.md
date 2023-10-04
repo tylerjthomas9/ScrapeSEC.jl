@@ -52,16 +52,14 @@ download_filings("./metadata/main_idx.tsv"; filing_types=["10-K", ])
 
 Download filings from a vector of filenames
 ```julia
-using CSV
-using DataFrames
-using ScrapeSEC
+using CSV, DataFrames, ScrapeSEC
 df = CSV.File(metadata_file, delim = "|") |> DataFrame
 download_filings(df.FileName)
 ```
 
 # Citing
 
-IF you use ScrapeSEC.jl as part of your research, teaching, or other activities, we would be grateful if you could cite our work. 
+If you use ScrapeSEC.jl as part of your research, teaching, or other activities, we would be grateful if you could cite our work. 
 
 ```
 @misc{ScrapeSEC.jlPackage,
