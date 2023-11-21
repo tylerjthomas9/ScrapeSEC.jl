@@ -53,7 +53,7 @@ download_filings("./metadata/main_idx.tsv"; filing_types=["10-K", ])
 Download filings from a vector of filenames
 ```julia
 using CSV, DataFrames, ScrapeSEC
-df = CSV.File(metadata_file, delim = "|") |> DataFrame
+df = CSV.File("./metadata/main_idx.tsv", delim = "|") |> DataFrame
 download_filings(df.FileName)
 ```
 
