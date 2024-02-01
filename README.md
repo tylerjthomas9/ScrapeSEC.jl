@@ -3,6 +3,7 @@
 [![CI](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/tylerjthomas9/ScrapeSEC.jl/actions/workflows/ci.yml)
  [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
  [![Coverage](http://codecov.io/github/tylerjthomas9/ScrapeSEC.jl/coverage.svg?branch=main)](https://codecov.io/gh/tylerjthomas9/ScrapeSEC.jl)
+ [![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 
 
 

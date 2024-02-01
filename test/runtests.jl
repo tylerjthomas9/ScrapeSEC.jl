@@ -1,3 +1,4 @@
+using Aqua
 using ScrapeSEC
 using Test
 
@@ -9,3 +10,5 @@ for t in tests
     println("* $fp ...")
     include(fp)
 end
+
+Aqua.test_all(ScrapeSEC, ambiguities=false)
