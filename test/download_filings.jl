@@ -11,7 +11,7 @@ end
     download_filings(
         1994,
         1994;
-        quarters=[3,4],
+        quarters=[3, 4],
         dest="./temp/",
         metadata_dest="./metadata/",
         running_tests=true,
