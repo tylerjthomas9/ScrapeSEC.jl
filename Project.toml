@@ -1,7 +1,7 @@
 name = "ScrapeSEC"
 uuid = "856806e7-be2f-4540-8165-3a51303b7af0"
 authors = ["tylerjthomas9 <tylerjthomas9@gmail.com>"]
-version = "0.8.0"
+version = "1.0.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -13,13 +13,13 @@ ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 
 [compat]
 Aqua = "0.8.4"
-CSV = "0.9, 0.10"
+CSV = "0.10"
 DataFrames = "1"
 Dates = "<0.0.1, 1"
 HTTP = "1"
 Term = "2"
 Test = "<0.0.1, 1"
-ZipFile = "0.9, 0.10"
+ZipFile = "0.10"
 julia = "1.6"
 
 [extras]

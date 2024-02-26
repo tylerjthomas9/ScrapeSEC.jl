@@ -11,4 +11,4 @@ for t in tests
     include(fp)
 end
 
-Aqua.test_all(ScrapeSEC, ambiguities=false)
+Aqua.test_all(ScrapeSEC; ambiguities=false)
