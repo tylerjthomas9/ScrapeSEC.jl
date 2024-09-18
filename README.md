@@ -39,7 +39,21 @@ Download 10-K, 8-K, and 10-Q metadata, filings for 2020-2022
 
 ```julia
 using ScrapeSEC
-download_filings(2020, 2022; filing_types=["10-K", "8-K", "10-Q"])
+download_filings(2023, 2024; filing_types=["10-K", "8-K", "10-Q"])
+df = DataFrame(CSV.File(metadata_file; delim="|"))
+```
+
+```julia
+julia> first(df, 5)
+5×5 DataFrame
+ Row │ CIK      Company Name            Form Type  Date Filed  Filename                          
+     │ Int64    String                  String31   Dates.Date  String                            
+─────┼───────────────────────────────────────────────────────────────────────────────────────────
+   1 │ 1000045  NICHOLAS FINANCIAL INC  10-Q       2023-02-14  edgar/data/1000045/0000950170-23…
+   2 │ 1000045  NICHOLAS FINANCIAL INC  4          2023-02-24  edgar/data/1000045/0001000045-23…
+   3 │ 1000045  NICHOLAS FINANCIAL INC  4          2023-02-28  edgar/data/1000045/0001000045-23…
+   4 │ 1000045  NICHOLAS FINANCIAL INC  4          2023-03-09  edgar/data/1000045/0001398344-23…
+   5 │ 1000045  NICHOLAS FINANCIAL INC  8-K        2023-01-24  edgar/data/1000045/0000950170-23…
 ```
 
 
