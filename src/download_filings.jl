@@ -231,7 +231,7 @@ function download_filings(
     running_tests=false::Bool,
     clean_text::Function=_pass_text,
 )
-    current_date = Dates.now()
+    current_date = Dates.now() - Dates.Day(1) #https://github.com/tylerjthomas9/ScrapeSEC.jl/issues/24
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
 
