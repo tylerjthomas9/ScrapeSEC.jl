@@ -120,7 +120,7 @@ function download_metadata_files(
         mkdir(dest)
     end
 
-    current_date = Dates.now()
+    current_date = Dates.now() - Dates.Day(1) #https://github.com/tylerjthomas9/ScrapeSEC.jl/issues/24
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
 
