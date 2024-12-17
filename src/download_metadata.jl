@@ -136,17 +136,14 @@ function download_metadata_files(
 
     urls = get_metadata_urls(time_periods)
     n_files = size(urls, 1)
-    pbar = ProgressBar(;)
-    job = addjob!(pbar; N=n_files, description="Downloading Metadata CSVs...")
-    start!(pbar)
-    @inbounds for idx in eachindex(urls)
-        update!(job)
+    p = Progress(n_files; desc="Downloading Metadata CSVs...")
+    for url in urls
         ScrapeSEC.download_metadata(
-            urls[idx]; dest=dest, skip_file=skip_file, verbose=verbose
+            url; dest=dest, skip_file=skip_file, verbose=verbose
         )
-        render(pbar)
+        next!(p)
     end
-    stop!(pbar)
+    finish!(p)
 
     return nothing
 end
