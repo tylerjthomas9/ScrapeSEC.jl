@@ -18,5 +18,10 @@ end
     )
     @test isfile("./metadata/1994-QTR4.tsv")
     rm("./metadata/1994-QTR4.tsv")
+
+    # Test when metadata files are empty and no filings are downloaded
+    download_filings(1994, 1994; filing_types=["40-F"])
+
+    rm("./metadata/1994-QTR4.tsv")
     # TODO: Is it safe to clear the temp dir? I dont want to accidently user files
 end

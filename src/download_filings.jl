@@ -30,9 +30,9 @@ function download_filing(
         mkdir(company_folder)
     end
 
-    f = open(new_file, "w")
-    write(f, clean_text(text))
-    close(f)
+    open(new_file, "w") do f
+        write(f, clean_text(text))
+    end
 
     return nothing
 end
@@ -59,8 +59,6 @@ Parameters
 * `dest`: Destination folder for downloaded filings
 * `download_rate`: Number of filings to download every second (limit=10)
 * `skip_file`: If true, existing files will be skipped
-* `pbar`: ProgressBar (Term.jl)
-* `stop_pbar`: If false, progress bar will not be stopped
 * `pbar_desc`: pbar Description
 * `runnings_tests`: If true, only downloads one file
 * `clean_text`: function to clean text before writing to file
@@ -70,8 +68,6 @@ function download_filings(
     dest="./data/"::String,
     download_rate=10::Int,
     skip_file=true::Bool,
-    pbar=ProgressBar(;)::ProgressBar,
-    stop_pbar=true::Bool,
     pbar_desc="Downloading Filings"::String,
     running_tests=false::Bool,
     clean_text::Function=_pass_text,
@@ -92,27 +88,28 @@ function download_filings(
     # download filings at 10 requests per second
     sleep_time = 1 / download_rate
 
-    job = addjob!(pbar; N=size(filenames, 1), description=pbar_desc)
-    start!(pbar)
+    if skip_file
+        filenames = filter(file -> !isfile(joinpath(dest, replace(file, "edgar/data/" => ""))), filenames)
+    end
+
+    if isempty(filenames)
+        return nothing
+    end
+
+    p = Progress(size(filenames, 1); desc=pbar_desc)
     for file in filenames
         full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
-        if isfile(full_file) && skip_file
-            continue
-        end
 
         @async download_filing(file, full_file, dest; clean_text)
 
-        update!(job)
+        next!(p)
         sleep(sleep_time)
-        render(pbar)
 
         if running_tests
             break
         end
     end
-    if stop_pbar
-        stop!(pbar)
-    end
+    finish!(p)
 
     return nothing
 end
@@ -141,8 +138,6 @@ Parameters
 * `filing_types`: Types of filings to download (eg. ["10-K", "10-Q"])
 * `download_rate`: Number of filings to download every second (limit=10)
 * `skip_file`: If true, existing files will be skipped
-* `pbar`: ProgressBar (Term.jl)
-* `stop_pbar`: If false, progress bar will not be stopped
 * `pbar_desc`: pbar Description
 * `runnings_tests`: If true, only downloads one file
 * `clean_text`: function to clean text before writing to file
@@ -153,8 +148,6 @@ function download_filings(
     filing_types=["10-K"]::Vector{String},
     download_rate=10::Int,
     skip_file=true::Bool,
-    pbar=ProgressBar(;)::ProgressBar,
-    stop_pbar=true::Bool,
     pbar_desc="Downloading Filings"::String,
     running_tests=false::Bool,
     clean_text::Function=_pass_text,
@@ -169,6 +162,10 @@ function download_filings(
     end
 
     df = DataFrame(CSV.File(metadata_file; delim="|"))
+    if isempty(df)
+        @warn "No filings found in metadata file: $metadata_file"
+        return nothing
+    end
     df = df[∈(filing_types).(df[!, "Form Type"]), :]
 
     download_filings(
@@ -176,8 +173,6 @@ function download_filings(
         dest=dest,
         download_rate=download_rate,
         skip_file=skip_file,
-        pbar=pbar,
-        stop_pbar=stop_pbar,
         pbar_desc=pbar_desc,
         running_tests=running_tests,
         clean_text,
@@ -252,12 +247,7 @@ function download_filings(
         dest=metadata_dest,
         skip_file=skip_metadata_file,
     )
-
-    pbar = ProgressBar(; columns=progress_bar_columns)
-    job = addjob!(
-        pbar; N=size(time_periods, 1), description="Iterating Over Time Periods..."
-    )
-    start!(pbar)
+    p = Progress(size(time_periods, 1); desc="Iterating Over Time Periods...")
     for t in time_periods
         file = joinpath(metadata_dest, string(t[1]) * "-QTR" * string(t[2]) * ".tsv")
         download_filings(
@@ -266,16 +256,13 @@ function download_filings(
             filing_types=filing_types,
             download_rate=download_rate,
             skip_file=skip_file,
-            pbar=pbar,
-            stop_pbar=false,
             pbar_desc="Downloading $(t[1]) Q$(t[2]) Filings",
             running_tests=running_tests,
             clean_text,
         )
-        update!(job)
-        render(pbar)
+        next!(p)
     end
-    stop!(pbar)
+    finish!(p)
 
     return nothing
 end

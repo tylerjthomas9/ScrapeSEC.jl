@@ -62,27 +62,27 @@ function download_metadata(
 
     HTTP.download(url, temp_zip; update_period=Inf)
     zarchive = ZipFile.Reader(temp_zip)
-    for f in zarchive.files
-        @assert f.name == "master.idx"
-        out = open(temp_file, "w")
-        write(out, read(f, String))
-        close(out)
+    for zip_file in zarchive.files
+        @assert zip_file.name == "master.idx"
+        open(temp_file, "w") do f
+            write(f, read(zip_file, String))
+        end
     end
     close(zarchive)
     rm(temp_zip)
 
-    f = open(temp_file, "r")
-    metadata = readlines(f)[10:end] # skip fluff at top
-    close(f)
+    metadata = open(temp_file, "r") do f
+        readlines(f)[10:end] # skip fluff at top
+    end
     rm(temp_file)
 
-    f = open(full_file, "w")
-    for line in metadata
-        if occursin("|", line) # skip "----------" line
-            write(f, line * "\n")
+    open(full_file, "w") do f
+        for line in metadata
+            if occursin("|", line) # skip "----------" line
+                write(f, line * "\n")
+            end
         end
     end
-    close(f)
 
     return nothing
 end
@@ -136,17 +136,14 @@ function download_metadata_files(
 
     urls = get_metadata_urls(time_periods)
     n_files = size(urls, 1)
-    pbar = ProgressBar(;)
-    job = addjob!(pbar; N=n_files, description="Downloading Metadata CSVs...")
-    start!(pbar)
-    @inbounds for idx in eachindex(urls)
-        update!(job)
+    p = Progress(n_files; desc="Downloading Metadata CSVs...")
+    for url in urls
         ScrapeSEC.download_metadata(
-            urls[idx]; dest=dest, skip_file=skip_file, verbose=verbose
+            url; dest=dest, skip_file=skip_file, verbose=verbose
         )
-        render(pbar)
+        next!(p)
     end
-    stop!(pbar)
+    finish!(p)
 
     return nothing
 end
