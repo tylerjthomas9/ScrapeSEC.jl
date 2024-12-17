@@ -30,9 +30,9 @@ function download_filing(
         mkdir(company_folder)
     end
 
-    f = open(new_file, "w")
-    write(f, clean_text(text))
-    close(f)
+    open(new_file, "w") do f
+        write(f, clean_text(text))
+    end
 
     return nothing
 end
@@ -92,13 +92,18 @@ function download_filings(
     # download filings at 10 requests per second
     sleep_time = 1 / download_rate
 
+    if skip_file
+        filenames = filter(file -> !isfile(joinpath(dest, replace(file, "edgar/data/" => ""))), filenames)
+    end
+
+    if isempty(filenames)
+        return nothing
+    end
+
     job = addjob!(pbar; N=size(filenames, 1), description=pbar_desc)
     start!(pbar)
     for file in filenames
         full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
-        if isfile(full_file) && skip_file
-            continue
-        end
 
         @async download_filing(file, full_file, dest; clean_text)
 
@@ -169,6 +174,10 @@ function download_filings(
     end
 
     df = DataFrame(CSV.File(metadata_file; delim="|"))
+    if isempty(df)
+        @warn "No filings found in metadata file: $metadata_file"
+        return nothing
+    end
     df = df[∈(filing_types).(df[!, "Form Type"]), :]
 
     download_filings(

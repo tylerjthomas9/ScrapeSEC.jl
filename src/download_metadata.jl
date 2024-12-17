@@ -62,27 +62,27 @@ function download_metadata(
 
     HTTP.download(url, temp_zip; update_period=Inf)
     zarchive = ZipFile.Reader(temp_zip)
-    for f in zarchive.files
-        @assert f.name == "master.idx"
-        out = open(temp_file, "w")
-        write(out, read(f, String))
-        close(out)
+    for zip_file in zarchive.files
+        @assert zip_file.name == "master.idx"
+        open(temp_file, "w") do f
+            write(f, read(zip_file, String))
+        end
     end
     close(zarchive)
     rm(temp_zip)
 
-    f = open(temp_file, "r")
-    metadata = readlines(f)[10:end] # skip fluff at top
-    close(f)
+    metadata = open(temp_file, "r") do f
+        readlines(f)[10:end] # skip fluff at top
+    end
     rm(temp_file)
 
-    f = open(full_file, "w")
-    for line in metadata
-        if occursin("|", line) # skip "----------" line
-            write(f, line * "\n")
+    open(full_file, "w") do f
+        for line in metadata
+            if occursin("|", line) # skip "----------" line
+                write(f, line * "\n")
+            end
         end
     end
-    close(f)
 
     return nothing
 end
