@@ -138,9 +138,7 @@ function download_metadata_files(
     n_files = size(urls, 1)
     p = Progress(n_files; desc="Downloading Metadata CSVs...")
     for url in urls
-        ScrapeSEC.download_metadata(
-            url; dest=dest, skip_file=skip_file, verbose=verbose
-        )
+        ScrapeSEC.download_metadata(url; dest=dest, skip_file=skip_file, verbose=verbose)
         next!(p)
     end
     finish!(p)

@@ -3,6 +3,35 @@ Function to return the text. Added this to allow custom text cleaning functions
 """
 _pass_text(text) = text
 
+function _extract_period_end_date(text::String)::String
+    i = findfirst("CONFORMED PERIOD OF REPORT:", text)
+    if i !== nothing
+        line_end = findnext('\n', text, i.stop)
+        if line_end !== nothing
+            date_str = text[(i.stop + 1):(line_end - 1)]
+            return strip(date_str)
+        end
+    end
+    return ""
+end
+
+function get_primary_document_url(
+    full_url::String, full_text::String, index_text::String
+)::String
+    period_end_date = _extract_period_end_date(full_text)
+    primary_file_name = replace(split(full_url, "/edgar/")[2], "-" => "")
+    primary_file_name = replace(primary_file_name, ".txt" => "") * "/"
+    edgar_prefix = "https://www.sec.gov/Archives/"
+    pattern = Regex("edgar/$primary_file_name\\w+-$(period_end_date)\\.htm")
+    match_obj = match(pattern, index_text)
+    if match_obj !== nothing
+        primary_doc_url = edgar_prefix * match_obj.match
+    else
+        primary_doc_url = ""
+    end
+    return primary_doc_url
+end
+
 """
 ```julia
 function download_filing(file_name::String, 
@@ -18,20 +47,40 @@ Parameters
 * `new_file`: new local file
 * `dest`: destination folder
 * `clean_text`: function to clean text before writing to file
+* `primary_document`: if true only download the primary document (if it exists)
 """
 function download_filing(
-    file_name::String, new_file::String, dest::String; clean_text::Function=_pass_text
+    file_name::String,
+    new_file::String,
+    dest::String;
+    clean_text::Function=_pass_text,
+    primary_document::Bool=false,
 )
+    # company_folder = joinpath(dest, split(new_file, "/")[end - 1])
+    # if !isdir(company_folder)
+    #     mkdir(company_folder)
+    # end
     full_url = "https://www.sec.gov/Archives/" * file_name
-    text = HTTP.get(full_url).body
+    text = String(HTTP.get(full_url).body)
 
-    company_folder = joinpath(dest, split(new_file, "/")[end - 1])
-    if !isdir(company_folder)
-        mkdir(company_folder)
+    if primary_document
+        index_url = replace(full_url, ".txt" => "-index.html")
+        index_text = String(HTTP.get(index_url).body)
+        primary_doc_url = get_primary_document_url(full_url, text, index_text)
+        if primary_doc_url != ""
+            try
+                text = String(HTTP.get(primary_doc_url).body)
+            catch e
+                # println("Failed to download primary document from $primary_doc_url")
+                # println("Using full text instead")
+                pass
+            end
+        end
     end
 
+    text = clean_text(text)
     open(new_file, "w") do f
-        write(f, clean_text(text))
+        write(f, text)
     end
 
     return nothing
@@ -48,7 +97,8 @@ function download_filings(
     stop_pbar=true::Bool,
     pbar_desc="Downloading Filings"::String,
     running_tests=false::Bool,
-    clean_text=nothing
+    clean_text=nothing,
+    primary_document=false,
 )
 ```
 
@@ -62,6 +112,7 @@ Parameters
 * `pbar_desc`: pbar Description
 * `runnings_tests`: If true, only downloads one file
 * `clean_text`: function to clean text before writing to file
+* `primary_document`: if true only download the primary document (if it exists)
 """
 function download_filings(
     filenames::AbstractVector;
@@ -71,6 +122,7 @@ function download_filings(
     pbar_desc="Downloading Filings"::String,
     running_tests=false::Bool,
     clean_text::Function=_pass_text,
+    primary_document::Bool=false,
 )
     if download_rate > 10
         download_rate = 10
@@ -89,7 +141,9 @@ function download_filings(
     sleep_time = 1 / download_rate
 
     if skip_file
-        filenames = filter(file -> !isfile(joinpath(dest, replace(file, "edgar/data/" => ""))), filenames)
+        filenames = filter(
+            file -> !isfile(joinpath(dest, replace(file, "edgar/data/" => ""))), filenames
+        )
     end
 
     if isempty(filenames)
@@ -100,7 +154,7 @@ function download_filings(
     for file in filenames
         full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
 
-        @async download_filing(file, full_file, dest; clean_text)
+        @async download_filing(file, full_file, dest; clean_text, primary_document)
 
         next!(p)
         sleep(sleep_time)
@@ -126,7 +180,8 @@ function download_filings(
     stop_pbar=true::Bool,
     pbar_desc="Downloading Filings"::String,
     running_tests=false::Bool,
-    clean_text=nothing
+    clean_text=nothing,
+    primary_document::Bool=false,
 )
 ```
 
@@ -141,6 +196,7 @@ Parameters
 * `pbar_desc`: pbar Description
 * `runnings_tests`: If true, only downloads one file
 * `clean_text`: function to clean text before writing to file
+* `primary_document`: if true only download the primary document (if it exists)
 """
 function download_filings(
     metadata_file::String;
@@ -151,6 +207,7 @@ function download_filings(
     pbar_desc="Downloading Filings"::String,
     running_tests=false::Bool,
     clean_text::Function=_pass_text,
+    primary_document::Bool=false,
 )
     if download_rate > 10
         download_rate = 10
@@ -176,6 +233,7 @@ function download_filings(
         pbar_desc=pbar_desc,
         running_tests=running_tests,
         clean_text,
+        primary_document,
     )
 
     return nothing
@@ -194,7 +252,8 @@ function download_filings(
     skip_file=true::Bool, 
     skip_metadata_file=true::Bool,
     running_tests=false::Bool,
-    clean_text=nothing
+    clean_text=nothing,
+    primary_document::Bool=false,
 )
 ```
 
@@ -212,6 +271,7 @@ Parameters
 * `skip_metadata_file`: If true, existing metadata files will be skipped
 * `runnings_tests`: If true, only downloads one file
 * `clean_text`: function to clean text before writing to file
+* `primary_document`: if true only download the primary document (if it exists)
 """
 function download_filings(
     start_year::Int,
@@ -225,6 +285,7 @@ function download_filings(
     skip_metadata_file=true::Bool,
     running_tests=false::Bool,
     clean_text::Function=_pass_text,
+    primary_document::Bool=false,
 )
     current_date = Dates.now() - Dates.Day(1) #https://github.com/tylerjthomas9/ScrapeSEC.jl/issues/24
     current_year = Dates.year(current_date)
@@ -259,6 +320,7 @@ function download_filings(
             pbar_desc="Downloading $(t[1]) Q$(t[2]) Filings",
             running_tests=running_tests,
             clean_text,
+            primary_document,
         )
         next!(p)
     end
