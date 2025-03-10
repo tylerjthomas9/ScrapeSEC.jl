@@ -56,10 +56,10 @@ function download_filing(
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
-    # company_folder = joinpath(dest, split(new_file, "/")[end - 1])
-    # if !isdir(company_folder)
-    #     mkdir(company_folder)
-    # end
+    company_folder = joinpath(dest, split(new_file, "/")[end - 1])
+    if !isdir(company_folder)
+        mkdir(company_folder)
+    end
     full_url = "https://www.sec.gov/Archives/" * file_name
     text = String(HTTP.get(full_url).body)
 
