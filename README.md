@@ -81,7 +81,7 @@ If you use ScrapeSEC.jl as part of your research, teaching, or other activities,
   author = {Tyler Thomas}
   title = {ScrapeSEC.jl}
   year = {2023}
-  url = {https://tylerjthomas9.github.io/ScrapeSEC.jl/}
+  url = {https://github.com/tylerjthomas9/ScrapeSEC.jl}
 }
 ```
 
