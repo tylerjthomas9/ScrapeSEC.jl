@@ -29,7 +29,7 @@ end
 """
 ```julia
 function download_metadata(url::String; dest::String, 
-    skip_file=false::Bool, verbose=false::Bool
+    skip_file::Bool=false, verbose::Bool=false
 )
 ```
 Download filing metadata CSV file
@@ -41,7 +41,7 @@ Parameters
 * `verbose`: Print out log 
 """
 function download_metadata(
-    url::String; dest::String, skip_file=false::Bool, verbose=false::Bool
+    url::String; dest::String, skip_file::Bool=false, verbose::Bool=false
 )
     full_file = split(url, "/")[end - 2] * "-" * split(url, "/")[end - 1] * ".tsv"
     full_file = joinpath(dest, full_file)
@@ -91,10 +91,10 @@ end
 ```julia
 function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
     quarters=[1, 2, 3, 4]::Vector{Int64},
-    skip_file=false::Bool, 
-    dest="./metadata/"::String, 
-    verbose=false::Bool,
-    download_rate=10::Int
+    skip_file::Bool=false, 
+    dest::String="./metadata/", 
+    verbose::Bool=false,
+    download_rate::Int=10
 )
 ```
 
@@ -109,11 +109,11 @@ Parameters
 """
 function download_metadata_files(
     start_year::Int64,
-    end_year=nothing::Union{Int64,Nothing};
-    quarters=[1, 2, 3, 4]::Vector{Int64},
-    skip_file=false::Bool,
-    dest="./metadata/"::String,
-    verbose=false::Bool,
+    end_year::Union{Int64,Nothing}=nothing;
+    quarters::Vector{Int}=[1, 2, 3, 4],
+    skip_file::Bool=false,
+    dest::String="./metadata/",
+    verbose::Bool=false,
 )
     println("Metadata Destination:  " * dest)
     if !isdir(dest)

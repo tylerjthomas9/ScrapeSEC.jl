@@ -1,8 +1,8 @@
 
 """
 ```julia
-function create_main_index(metadata_folder="./metadata/"::String, 
-    main_file="./metadata/main_idx.tsv"::String
+function create_main_index(metadata_folder::String="./metadata/", 
+    main_file::String="./metadata/main_idx.tsv"
 )
 ```
 
@@ -14,7 +14,7 @@ Parameters
 
 """
 function create_main_index(
-    metadata_folder="./metadata/"::String, main_file="./metadata/main_idx.tsv"::String
+    metadata_folder::String="./metadata/", main_file::String="./metadata/main_idx.tsv"
 )
     metadata_files = [
         i for

@@ -11,4 +11,7 @@ for t in tests
     include(fp)
 end
 
+println("* jet.jl ...")
+include("jet.jl")
+
 Aqua.test_all(ScrapeSEC; ambiguities=false)

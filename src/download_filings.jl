@@ -89,13 +89,13 @@ end
 ```julia
 function download_filings(
     filenames::Vector;
-    dest="./data/"::String,
-    download_rate=10::Int,
-    skip_file=true::Bool,
-    pbar=ProgressBar(; )::ProgressBar,
-    stop_pbar=true::Bool,
-    pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool,
+    dest::String="./data/",
+    download_rate::Int=10,
+    skip_file::Bool=true,
+    pbar::ProgressBar=ProgressBar(),
+    stop_pbar::Bool=true,
+    pbar_desc::String="Downloading Filings",
+    running_tests::Bool=false,
     clean_text=nothing,
     primary_document=false,
 )
@@ -115,11 +115,11 @@ Parameters
 """
 function download_filings(
     filenames::AbstractVector;
-    dest="./data/"::String,
-    download_rate=10::Int,
-    skip_file=true::Bool,
-    pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool,
+    dest::String="./data/",
+    download_rate::Int=10,
+    skip_file::Bool=true,
+    pbar_desc::String="Downloading Filings",
+    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
@@ -175,14 +175,14 @@ end
 ```julia
 function download_filings(
     metadata_file::String; 
-    dest="./data/"::String, 
+    dest::String="./data/", 
     filing_types=["10-K", ]::Vector{String}, 
-    download_rate=10::Int, 
-    skip_file=true::Bool,
-    pbar=ProgressBar(; )::ProgressBar,
-    stop_pbar=true::Bool,
-    pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool,
+    download_rate::Int=10, 
+    skip_file::Bool=true,
+    pbar::ProgressBar=ProgressBar(),
+    stop_pbar::Bool=true,
+    pbar_desc::String="Downloading Filings",
+    running_tests::Bool=false,
     clean_text=nothing,
     primary_document::Bool=false,
 )
@@ -203,12 +203,12 @@ Parameters
 """
 function download_filings(
     metadata_file::String;
-    dest="./data/"::String,
-    filing_types=["10-K"]::Vector{String},
-    download_rate=10::Int,
-    skip_file=true::Bool,
-    pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool,
+    dest::String="./data/",
+    filing_types::Vector{String}=["10-K"],
+    download_rate::Int=10,
+    skip_file::Bool=true,
+    pbar_desc::String="Downloading Filings",
+    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
@@ -247,14 +247,14 @@ end
 function download_filings(
     start_year::Int, 
     end_year::Union{Int, Nothing}=nothing; 
-    quarters=[1,2,3,4]::Vector{Int}, 
-    dest="./data/"::String, 
+    quarters::Vector{Int}=[1,2,3,4], 
+    dest::String="./data/", 
     filing_types=["10-K", ]::Vector{String}, 
-    download_rate=10::Int, 
-    metadata_dest="./metadata/"::String,
-    skip_file=true::Bool, 
-    skip_metadata_file=true::Bool,
-    running_tests=false::Bool,
+    download_rate::Int=10, 
+    metadata_dest::String="./metadata/",
+    skip_file::Bool=true, 
+    skip_metadata_file::Bool=true,
+    running_tests::Bool=false,
     clean_text=nothing,
     primary_document::Bool=false,
 )
@@ -279,14 +279,14 @@ Parameters
 function download_filings(
     start_year::Int,
     end_year::Union{Int,Nothing}=nothing;
-    quarters=[1, 2, 3, 4]::Vector{Int},
-    dest="./data/"::String,
-    filing_types=["10-K"]::Vector{String},
-    download_rate=10::Int,
-    metadata_dest="./metadata/"::String,
-    skip_file=true::Bool,
-    skip_metadata_file=true::Bool,
-    running_tests=false::Bool,
+    quarters::Vector{Int}=[1, 2, 3, 4],
+    dest::String="./data/",
+    filing_types::Vector{String}=["10-K"],
+    download_rate::Int=10,
+    metadata_dest::String="./metadata/",
+    skip_file::Bool=true,
+    skip_metadata_file::Bool=true,
+    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
