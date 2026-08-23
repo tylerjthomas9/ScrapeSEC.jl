@@ -61,7 +61,7 @@ function download_metadata(
         return nothing
     end
 
-    HTTP.download(url, temp_zip; update_period=Inf)
+    ScrapeSEC.download_file(url, temp_zip)
     zarchive = ZipFile.Reader(temp_zip)
     for zip_file in zarchive.files
         @assert zip_file.name == "master.idx"

@@ -61,15 +61,15 @@ function download_filing(
         mkdir(company_folder)
     end
     full_url = "https://www.sec.gov/Archives/" * file_name
-    text = String(HTTP.get(full_url).body)
+    text = ScrapeSEC.fetch_bytes(full_url)
 
     if primary_document
         index_url = replace(full_url, ".txt" => "-index.html")
-        index_text = String(HTTP.get(index_url).body)
+        index_text = ScrapeSEC.fetch_bytes(index_url)
         primary_doc_url = get_primary_document_url(full_url, text, index_text)
         if primary_doc_url != ""
             try
-                text = String(HTTP.get(primary_doc_url).body)
+                text = ScrapeSEC.fetch_bytes(primary_doc_url)
             catch e
                 # println("Failed to download primary document from $primary_doc_url")
                 # println("Using full text instead")
