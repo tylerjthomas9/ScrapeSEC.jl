@@ -73,7 +73,6 @@ function download_filing(
             catch e
                 # println("Failed to download primary document from $primary_doc_url")
                 # println("Using full text instead")
-                pass
             end
         end
     end
@@ -151,10 +150,11 @@ function download_filings(
     end
 
     p = Progress(size(filenames, 1); desc=pbar_desc)
+    tasks = Task[]
     for file in filenames
         full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
 
-        @async download_filing(file, full_file, dest; clean_text, primary_document)
+        push!(tasks, @async download_filing(file, full_file, dest; clean_text, primary_document))
 
         next!(p)
         sleep(sleep_time)
@@ -164,6 +164,9 @@ function download_filings(
         end
     end
     finish!(p)
+
+    # wait for all downloads and surface any errors to the caller
+    foreach(wait, tasks)
 
     return nothing
 end
@@ -243,7 +246,7 @@ end
 ```julia
 function download_filings(
     start_year::Int, 
-    end_year::Int; 
+    end_year::Union{Int, Nothing}=nothing; 
     quarters=[1,2,3,4]::Vector{Int}, 
     dest="./data/"::String, 
     filing_types=["10-K", ]::Vector{String}, 
@@ -275,7 +278,7 @@ Parameters
 """
 function download_filings(
     start_year::Int,
-    end_year::Int;
+    end_year::Union{Int,Nothing}=nothing;
     quarters=[1, 2, 3, 4]::Vector{Int},
     dest="./data/"::String,
     filing_types=["10-K"]::Vector{String},
@@ -291,7 +294,7 @@ function download_filings(
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
 
-    if end_year == nothing
+    if isnothing(end_year)
         end_year = current_year
     end
 

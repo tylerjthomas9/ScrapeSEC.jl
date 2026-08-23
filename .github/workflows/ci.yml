@@ -20,7 +20,7 @@ jobs:
         version:
           - '1'
         os:
-          - ubuntu-latest
+          - ubuntu-slim
           # - windows-latest
           # - macOS-latest
         arch:

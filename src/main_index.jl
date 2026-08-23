@@ -18,7 +18,7 @@ function create_main_index(
 )
     metadata_files = [
         i for
-        i in readdir(metadata_folder; join=true) if (i != main_file) & occursin(".tsv", i)
+        i in readdir(metadata_folder; join=true) if (i != main_file) && occursin(".tsv", i)
     ]
     df = reduce(vcat, [DataFrame(CSV.File(i; delim="|")) for i in metadata_files])
 

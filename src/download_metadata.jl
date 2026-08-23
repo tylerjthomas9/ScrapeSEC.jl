@@ -49,11 +49,12 @@ function download_metadata(
         println(full_file)
     end
 
-    #TODO: unique temp files, so we can async download metadata
-    temp_file = "main.idx"
-    temp_zip = "main.zip"
+    # unique temp directory so concurrent downloads don't clobber each other
+    tmp_dir = mktempdir()
+    temp_file = joinpath(tmp_dir, "main.idx")
+    temp_zip = joinpath(tmp_dir, "main.zip")
 
-    if isfile(full_file) & skip_file
+    if isfile(full_file) && skip_file
         if verbose
             println("Skipping " * full_file)
         end
@@ -69,12 +70,11 @@ function download_metadata(
         end
     end
     close(zarchive)
-    rm(temp_zip)
 
     metadata = open(temp_file, "r") do f
         readlines(f)[10:end] # skip fluff at top
     end
-    rm(temp_file)
+    rm(tmp_dir; recursive=true)
 
     open(full_file, "w") do f
         for line in metadata
