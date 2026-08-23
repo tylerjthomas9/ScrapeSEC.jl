@@ -13,7 +13,7 @@ ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 
 [compat]
 Aqua = "0.8.4"
-CSV = "0.10"
+CSV = "0.10.13"
 DataFrames = "1"
 Dates = "<0.0.1, 1"
 HTTP = "1"
