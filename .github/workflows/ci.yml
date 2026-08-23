@@ -20,7 +20,7 @@ jobs:
         version:
           - '1'
         os:
-          - ubuntu-latest
+          - ubuntu-slim
           # - windows-latest
           # - macOS-latest
         arch:
@@ -38,3 +38,17 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           files: lcov.info
+
+  invalidations:
+    name: Invalidation tracking (Julia 1.11)
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: '1.11'
+      - uses: julia-actions/julia-invalidations@v1
+        id: invs
+      - name: Report invalidation counts
+        run: |
+          echo 'Invalidation report: ${{ steps.invs.outputs.latest }}'

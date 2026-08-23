@@ -29,7 +29,7 @@ end
 """
 ```julia
 function download_metadata(url::String; dest::String, 
-    skip_file=false::Bool, verbose=false::Bool
+    skip_file::Bool=false, verbose::Bool=false
 )
 ```
 Download filing metadata CSV file
@@ -41,7 +41,7 @@ Parameters
 * `verbose`: Print out log 
 """
 function download_metadata(
-    url::String; dest::String, skip_file=false::Bool, verbose=false::Bool
+    url::String; dest::String, skip_file::Bool=false, verbose::Bool=false
 )
     full_file = split(url, "/")[end - 2] * "-" * split(url, "/")[end - 1] * ".tsv"
     full_file = joinpath(dest, full_file)
@@ -49,18 +49,19 @@ function download_metadata(
         println(full_file)
     end
 
-    #TODO: unique temp files, so we can async download metadata
-    temp_file = "main.idx"
-    temp_zip = "main.zip"
+    # unique temp directory so concurrent downloads don't clobber each other
+    tmp_dir = mktempdir()
+    temp_file = joinpath(tmp_dir, "main.idx")
+    temp_zip = joinpath(tmp_dir, "main.zip")
 
-    if isfile(full_file) & skip_file
+    if isfile(full_file) && skip_file
         if verbose
             println("Skipping " * full_file)
         end
         return nothing
     end
 
-    HTTP.download(url, temp_zip; update_period=Inf)
+    ScrapeSEC.download_file(url, temp_zip)
     zarchive = ZipFile.Reader(temp_zip)
     for zip_file in zarchive.files
         @assert zip_file.name == "master.idx"
@@ -69,12 +70,11 @@ function download_metadata(
         end
     end
     close(zarchive)
-    rm(temp_zip)
 
     metadata = open(temp_file, "r") do f
         readlines(f)[10:end] # skip fluff at top
     end
-    rm(temp_file)
+    rm(tmp_dir; recursive=true)
 
     open(full_file, "w") do f
         for line in metadata
@@ -91,10 +91,10 @@ end
 ```julia
 function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
     quarters=[1, 2, 3, 4]::Vector{Int64},
-    skip_file=false::Bool, 
-    dest="./metadata/"::String, 
-    verbose=false::Bool,
-    download_rate=10::Int
+    skip_file::Bool=false, 
+    dest::String="./metadata/", 
+    verbose::Bool=false,
+    download_rate::Int=10
 )
 ```
 
@@ -109,11 +109,11 @@ Parameters
 """
 function download_metadata_files(
     start_year::Int64,
-    end_year=nothing::Union{Int64,Nothing};
-    quarters=[1, 2, 3, 4]::Vector{Int64},
-    skip_file=false::Bool,
-    dest="./metadata/"::String,
-    verbose=false::Bool,
+    end_year::Union{Int64,Nothing}=nothing;
+    quarters::Vector{Int}=[1, 2, 3, 4],
+    skip_file::Bool=false,
+    dest::String="./metadata/",
+    verbose::Bool=false,
 )
     println("Metadata Destination:  " * dest)
     if !isdir(dest)

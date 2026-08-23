@@ -61,19 +61,18 @@ function download_filing(
         mkdir(company_folder)
     end
     full_url = "https://www.sec.gov/Archives/" * file_name
-    text = String(HTTP.get(full_url).body)
+    text = ScrapeSEC.fetch_bytes(full_url)
 
     if primary_document
         index_url = replace(full_url, ".txt" => "-index.html")
-        index_text = String(HTTP.get(index_url).body)
+        index_text = ScrapeSEC.fetch_bytes(index_url)
         primary_doc_url = get_primary_document_url(full_url, text, index_text)
         if primary_doc_url != ""
             try
-                text = String(HTTP.get(primary_doc_url).body)
+                text = ScrapeSEC.fetch_bytes(primary_doc_url)
             catch e
                 # println("Failed to download primary document from $primary_doc_url")
                 # println("Using full text instead")
-                pass
             end
         end
     end
@@ -90,13 +89,13 @@ end
 ```julia
 function download_filings(
     filenames::Vector;
-    dest="./data/"::String,
-    download_rate=10::Int,
-    skip_file=true::Bool,
-    pbar=ProgressBar(; )::ProgressBar,
-    stop_pbar=true::Bool,
-    pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool,
+    dest::String="./data/",
+    download_rate::Int=10,
+    skip_file::Bool=true,
+    pbar::ProgressBar=ProgressBar(),
+    stop_pbar::Bool=true,
+    pbar_desc::String="Downloading Filings",
+    running_tests::Bool=false,
     clean_text=nothing,
     primary_document=false,
 )
@@ -116,11 +115,11 @@ Parameters
 """
 function download_filings(
     filenames::AbstractVector;
-    dest="./data/"::String,
-    download_rate=10::Int,
-    skip_file=true::Bool,
-    pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool,
+    dest::String="./data/",
+    download_rate::Int=10,
+    skip_file::Bool=true,
+    pbar_desc::String="Downloading Filings",
+    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
@@ -151,10 +150,11 @@ function download_filings(
     end
 
     p = Progress(size(filenames, 1); desc=pbar_desc)
+    tasks = Task[]
     for file in filenames
         full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
 
-        @async download_filing(file, full_file, dest; clean_text, primary_document)
+        push!(tasks, @async download_filing(file, full_file, dest; clean_text, primary_document))
 
         next!(p)
         sleep(sleep_time)
@@ -165,6 +165,9 @@ function download_filings(
     end
     finish!(p)
 
+    # wait for all downloads and surface any errors to the caller
+    foreach(wait, tasks)
+
     return nothing
 end
 
@@ -172,14 +175,14 @@ end
 ```julia
 function download_filings(
     metadata_file::String; 
-    dest="./data/"::String, 
+    dest::String="./data/", 
     filing_types=["10-K", ]::Vector{String}, 
-    download_rate=10::Int, 
-    skip_file=true::Bool,
-    pbar=ProgressBar(; )::ProgressBar,
-    stop_pbar=true::Bool,
-    pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool,
+    download_rate::Int=10, 
+    skip_file::Bool=true,
+    pbar::ProgressBar=ProgressBar(),
+    stop_pbar::Bool=true,
+    pbar_desc::String="Downloading Filings",
+    running_tests::Bool=false,
     clean_text=nothing,
     primary_document::Bool=false,
 )
@@ -200,12 +203,12 @@ Parameters
 """
 function download_filings(
     metadata_file::String;
-    dest="./data/"::String,
-    filing_types=["10-K"]::Vector{String},
-    download_rate=10::Int,
-    skip_file=true::Bool,
-    pbar_desc="Downloading Filings"::String,
-    running_tests=false::Bool,
+    dest::String="./data/",
+    filing_types::Vector{String}=["10-K"],
+    download_rate::Int=10,
+    skip_file::Bool=true,
+    pbar_desc::String="Downloading Filings",
+    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
@@ -243,15 +246,15 @@ end
 ```julia
 function download_filings(
     start_year::Int, 
-    end_year::Int; 
-    quarters=[1,2,3,4]::Vector{Int}, 
-    dest="./data/"::String, 
+    end_year::Union{Int, Nothing}=nothing; 
+    quarters::Vector{Int}=[1,2,3,4], 
+    dest::String="./data/", 
     filing_types=["10-K", ]::Vector{String}, 
-    download_rate=10::Int, 
-    metadata_dest="./metadata/"::String,
-    skip_file=true::Bool, 
-    skip_metadata_file=true::Bool,
-    running_tests=false::Bool,
+    download_rate::Int=10, 
+    metadata_dest::String="./metadata/",
+    skip_file::Bool=true, 
+    skip_metadata_file::Bool=true,
+    running_tests::Bool=false,
     clean_text=nothing,
     primary_document::Bool=false,
 )
@@ -275,15 +278,15 @@ Parameters
 """
 function download_filings(
     start_year::Int,
-    end_year::Int;
-    quarters=[1, 2, 3, 4]::Vector{Int},
-    dest="./data/"::String,
-    filing_types=["10-K"]::Vector{String},
-    download_rate=10::Int,
-    metadata_dest="./metadata/"::String,
-    skip_file=true::Bool,
-    skip_metadata_file=true::Bool,
-    running_tests=false::Bool,
+    end_year::Union{Int,Nothing}=nothing;
+    quarters::Vector{Int}=[1, 2, 3, 4],
+    dest::String="./data/",
+    filing_types::Vector{String}=["10-K"],
+    download_rate::Int=10,
+    metadata_dest::String="./metadata/",
+    skip_file::Bool=true,
+    skip_metadata_file::Bool=true,
+    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
@@ -291,7 +294,7 @@ function download_filings(
     current_year = Dates.year(current_date)
     current_quarter = Dates.quarterofyear(current_date)
 
-    if end_year == nothing
+    if isnothing(end_year)
         end_year = current_year
     end
 
