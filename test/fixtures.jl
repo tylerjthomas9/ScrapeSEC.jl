@@ -38,7 +38,7 @@ function synth_master_zip(path::AbstractString)
         f = ZipFile.addfile(w, "master.idx")
         write(f, idx_content)
         close(f)
-        close(w)
+        return close(w)
     end
     cp(tmp, path; force=true)
     rm(tmp; force=true)
@@ -50,19 +50,22 @@ function fixture_bytes(url::AbstractString)::String
         error("use synth_master_zip for $url")
     elseif occursin("-index.html", url)
         for (cik, (_, index_fixture)) in FILING_FIXTURES
-            occursin("/$(cik)/", url) && return read(joinpath(FIXTURES_DIR, index_fixture), String)
+            occursin("/$(cik)/", url) &&
+                return read(joinpath(FIXTURES_DIR, index_fixture), String)
         end
     elseif occursin(".htm", url)
         # primary document request: any filing fixture works, pick by cik
         for (cik, (text_fixture, _)) in FILING_FIXTURES
-            occursin("/$(cik)/", url) && return read(joinpath(FIXTURES_DIR, text_fixture), String)
+            occursin("/$(cik)/", url) &&
+                return read(joinpath(FIXTURES_DIR, text_fixture), String)
         end
     else
         for (cik, (text_fixture, _)) in FILING_FIXTURES
-            occursin("/$(cik)/", url) && return read(joinpath(FIXTURES_DIR, text_fixture), String)
+            occursin("/$(cik)/", url) &&
+                return read(joinpath(FIXTURES_DIR, text_fixture), String)
         end
     end
-    error("No saved example response for url: $url")
+    return error("No saved example response for url: $url")
 end
 
 ScrapeSEC.fetch_bytes(url::AbstractString) = fixture_bytes(url)

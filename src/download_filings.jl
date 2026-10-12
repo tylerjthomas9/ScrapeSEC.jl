@@ -79,7 +79,7 @@ function download_filing(
 
     text = clean_text(text)
     open(new_file, "w") do f
-        write(f, text)
+        return write(f, text)
     end
 
     return nothing
@@ -154,7 +154,10 @@ function download_filings(
     for file in filenames
         full_file = joinpath(dest, replace(file, "edgar/data/" => ""))
 
-        push!(tasks, @async download_filing(file, full_file, dest; clean_text, primary_document))
+        push!(
+            tasks,
+            @async download_filing(file, full_file, dest; clean_text, primary_document)
+        )
 
         next!(p)
         sleep(sleep_time)
@@ -221,7 +224,7 @@ function download_filings(
         )
     end
 
-    df = DataFrame(CSV.File(metadata_file; delim="|"))
+    df = DataFrame(CSV.File(read(metadata_file); delim="|"))
     if isempty(df)
         @warn "No filings found in metadata file: $metadata_file"
         return nothing

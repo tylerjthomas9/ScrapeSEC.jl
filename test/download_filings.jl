@@ -40,7 +40,9 @@ end
     rm("./metadata/1994-QTR3.tsv")
 
     # Test when metadata files are empty and no filings are downloaded
-    download_filings(1994, 1994; quarters=[3], filing_types=["40-F"], skip_metadata_file=false)
+    download_filings(
+        1994, 1994; quarters=[3], filing_types=["40-F"], skip_metadata_file=false
+    )
     rm("./metadata/1994-QTR3.tsv")
 end
 

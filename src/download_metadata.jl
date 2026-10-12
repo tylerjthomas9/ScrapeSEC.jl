@@ -66,13 +66,13 @@ function download_metadata(
     for zip_file in zarchive.files
         @assert zip_file.name == "master.idx"
         open(temp_file, "w") do f
-            write(f, read(zip_file, String))
+            return write(f, read(zip_file, String))
         end
     end
     close(zarchive)
 
     metadata = open(temp_file, "r") do f
-        readlines(f)[10:end] # skip fluff at top
+        return readlines(f)[10:end] # skip fluff at top
     end
     rm(tmp_dir; recursive=true)
 
