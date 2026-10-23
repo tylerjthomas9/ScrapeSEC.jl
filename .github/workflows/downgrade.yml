@@ -12,7 +12,7 @@ on:
       - 'docs/**'
 jobs:
   test:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         version: ['1']
@@ -21,6 +21,7 @@ jobs:
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.version }}
+      - uses: julia-actions/cache@v1
       - uses: cjdoris/julia-downgrade-compat-action@v1
         with:
           skip: Pkg,TOML,JET,Aqua

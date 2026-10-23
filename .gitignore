@@ -27,5 +27,6 @@ Manifest.toml
 *.zip
 *.txt
 *.idx
+!test/data/fixtures/*.txt
 test/temp_*
 temp/*
