@@ -1,0 +1,32 @@
+name: Format Check
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    tags: '*'
+  pull_request:
+jobs:
+  format-check:
+    name: Format check
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: '1'
+      - name: Instantiate `format` environment and format
+        run: |
+          julia  --project=format --color=yes -e 'using Pkg; Pkg.instantiate()'
+          julia  --project=format --color=yes 'format/run.jl'
+      - name: Format check
+        run: |
+          julia -e '
+          out = read(`git diff --name-only`, String)
+          if out == ""
+              exit(0)
+          else
+              @error "Some files have not been formatted!"
+              write(stdout, out)
+              exit(1)
+          end'
