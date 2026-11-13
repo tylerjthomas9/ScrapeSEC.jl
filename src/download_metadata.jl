@@ -1,3 +1,24 @@
+"""
+    _time_periods(start_year, end_year, quarters) -> Vector{Tuple{Int,Int}}
+
+`(year, quarter)` pairs from `start_year` through `end_year` (the current year when
+`nothing`). Quarters that have not started yet and 1993 Q1–Q2, which have no EDGAR
+index, are left out.
+"""
+function _time_periods(
+    start_year::Int, end_year::Union{Int,Nothing}, quarters::Vector{Int}
+)::Vector{Tuple{Int,Int}}
+    current_date = Dates.now() - Dates.Day(1) #https://github.com/tylerjthomas9/ScrapeSEC.jl/issues/24
+    current_year = Dates.year(current_date)
+    current_quarter = Dates.quarterofyear(current_date)
+    end_year = something(end_year, current_year)
+
+    return [
+        (y, q) for y in start_year:end_year for q in quarters if
+        (y < current_year || (y == current_year && q <= current_quarter)) &&
+            (q > 2 || y > 1993)
+    ]
+end
 
 """
 ```julia
@@ -49,17 +70,17 @@ function download_metadata(
         println(full_file)
     end
 
-    # unique temp directory so concurrent downloads don't clobber each other
-    tmp_dir = mktempdir()
-    temp_file = joinpath(tmp_dir, "main.idx")
-    temp_zip = joinpath(tmp_dir, "main.zip")
-
     if isfile(full_file) && skip_file
         if verbose
             println("Skipping " * full_file)
         end
         return nothing
     end
+
+    # unique temp directory so concurrent downloads don't clobber each other
+    tmp_dir = mktempdir()
+    temp_file = joinpath(tmp_dir, "main.idx")
+    temp_zip = joinpath(tmp_dir, "main.zip")
 
     ScrapeSEC.download_file(url, temp_zip)
     zarchive = ZipFile.Reader(temp_zip)
@@ -89,12 +110,13 @@ end
 
 """
 ```julia
-function download_metadata_files(start_year::Int64, end_year=nothing::Union{Int64, Nothing};
-    quarters=[1, 2, 3, 4]::Vector{Int64},
-    skip_file::Bool=false, 
-    dest::String="./metadata/", 
+function download_metadata_files(
+    start_year::Int64,
+    end_year::Union{Int64,Nothing}=nothing;
+    quarters::Vector{Int}=[1, 2, 3, 4],
+    skip_file::Bool=false,
+    dest::String="./metadata/",
     verbose::Bool=false,
-    download_rate::Int=10
 )
 ```
 
@@ -102,7 +124,7 @@ Download all metadata files over a time range
 
 Parameters
 * `start_year`: first year in range
-* `end_year`: last year in range
+* `end_year`: last year in range (defaults to the current year)
 * `quarters`: Quarters of the year to download files from [1,2,3,4]
 * `skip_file`: If true, existing files will be skipped
 * `verbose`: Print out log
@@ -120,20 +142,7 @@ function download_metadata_files(
         mkdir(dest)
     end
 
-    current_date = Dates.now() - Dates.Day(1) #https://github.com/tylerjthomas9/ScrapeSEC.jl/issues/24
-    current_year = Dates.year(current_date)
-    current_quarter = Dates.quarterofyear(current_date)
-
-    if isnothing(end_year)
-        years = collect(start_year:start_year)
-    else
-        years = collect(start_year:end_year)
-    end
-    time_periods = [
-        (y, q) for y in years for
-        q in quarters if (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
-    ]
-
+    time_periods = _time_periods(start_year, end_year, quarters)
     urls = get_metadata_urls(time_periods)
     n_files = size(urls, 1)
     p = Progress(n_files; desc="Downloading Metadata CSVs...")

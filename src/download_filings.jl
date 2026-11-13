@@ -34,10 +34,13 @@ end
 
 """
 ```julia
-function download_filing(file_name::String, 
-                        new_file::String, 
-                        dest::String;
-                        clean_text::Function)
+function download_filing(
+    file_name::String,
+    new_file::String,
+    dest::String;
+    clean_text::Function=_pass_text,
+    primary_document::Bool=false,
+)
 ```
 
 Download filing from https://www.sec.gov/Archives/
@@ -71,8 +74,8 @@ function download_filing(
             try
                 text = ScrapeSEC.fetch_bytes(primary_doc_url)
             catch e
-                # println("Failed to download primary document from $primary_doc_url")
-                # println("Using full text instead")
+                @warn "Failed to download primary document from $primary_doc_url; saving the full filing instead." exception =
+                    e
             end
         end
     end
@@ -88,16 +91,13 @@ end
 """
 ```julia
 function download_filings(
-    filenames::Vector;
+    filenames::AbstractVector;
     dest::String="./data/",
     download_rate::Int=10,
     skip_file::Bool=true,
-    pbar::ProgressBar=ProgressBar(),
-    stop_pbar::Bool=true,
     pbar_desc::String="Downloading Filings",
-    running_tests::Bool=false,
-    clean_text=nothing,
-    primary_document=false,
+    clean_text::Function=_pass_text,
+    primary_document::Bool=false,
 )
 ```
 
@@ -108,8 +108,7 @@ Parameters
 * `dest`: Destination folder for downloaded filings
 * `download_rate`: Number of filings to download every second (limit=10)
 * `skip_file`: If true, existing files will be skipped
-* `pbar_desc`: pbar Description
-* `runnings_tests`: If true, only downloads one file
+* `pbar_desc`: Progress bar description
 * `clean_text`: function to clean text before writing to file
 * `primary_document`: if true only download the primary document (if it exists)
 """
@@ -119,17 +118,12 @@ function download_filings(
     download_rate::Int=10,
     skip_file::Bool=true,
     pbar_desc::String="Downloading Filings",
-    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
     if download_rate > 10
+        @warn "download_rate of $download_rate per second is above the SEC limit; using 10 per second."
         download_rate = 10
-        println(
-            "download_rate of more than 10 per second(",
-            download_rate,
-            ") is not valid. download_rate has been set to 10/second.",
-        )
     end
 
     if !isdir(dest)
@@ -161,10 +155,6 @@ function download_filings(
 
         next!(p)
         sleep(sleep_time)
-
-        if running_tests
-            break
-        end
     end
     finish!(p)
 
@@ -177,16 +167,13 @@ end
 """
 ```julia
 function download_filings(
-    metadata_file::String; 
-    dest::String="./data/", 
-    filing_types=["10-K", ]::Vector{String}, 
-    download_rate::Int=10, 
+    metadata_file::String;
+    dest::String="./data/",
+    filing_types::Vector{String}=["10-K"],
+    download_rate::Int=10,
     skip_file::Bool=true,
-    pbar::ProgressBar=ProgressBar(),
-    stop_pbar::Bool=true,
     pbar_desc::String="Downloading Filings",
-    running_tests::Bool=false,
-    clean_text=nothing,
+    clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
 ```
@@ -199,8 +186,7 @@ Parameters
 * `filing_types`: Types of filings to download (eg. ["10-K", "10-Q"])
 * `download_rate`: Number of filings to download every second (limit=10)
 * `skip_file`: If true, existing files will be skipped
-* `pbar_desc`: pbar Description
-* `runnings_tests`: If true, only downloads one file
+* `pbar_desc`: Progress bar description
 * `clean_text`: function to clean text before writing to file
 * `primary_document`: if true only download the primary document (if it exists)
 """
@@ -211,19 +197,9 @@ function download_filings(
     download_rate::Int=10,
     skip_file::Bool=true,
     pbar_desc::String="Downloading Filings",
-    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
-    if download_rate > 10
-        download_rate = 10
-        println(
-            "download_rate of more than 10 per second(",
-            download_rate,
-            ") is not valid. download_rate has been set to 10/second.",
-        )
-    end
-
     df = DataFrame(CSV.File(read(metadata_file); delim="|"))
     if isempty(df)
         @warn "No filings found in metadata file: $metadata_file"
@@ -237,7 +213,6 @@ function download_filings(
         download_rate=download_rate,
         skip_file=skip_file,
         pbar_desc=pbar_desc,
-        running_tests=running_tests,
         clean_text,
         primary_document,
     )
@@ -253,12 +228,11 @@ function download_filings(
     quarters::Vector{Int}=[1,2,3,4], 
     dest::String="./data/", 
     filing_types=["10-K", ]::Vector{String}, 
-    download_rate::Int=10, 
+    download_rate::Int=10,
     metadata_dest::String="./metadata/",
-    skip_file::Bool=true, 
+    skip_file::Bool=true,
     skip_metadata_file::Bool=true,
-    running_tests::Bool=false,
-    clean_text=nothing,
+    clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
 ```
@@ -267,7 +241,7 @@ Download quarterly filings from https://www.sec.gov/Archives/
 
 Parameters
 * `start_year`: First year to download filings
-* `end_year`: Last year to download filings
+* `end_year`: Last year to download filings (defaults to the current year)
 * `quarters`: Quarters to download filings from
 * `dest`: Destination folder for downloaded filings
 * `filing_types`: Types of filings to download (eg. ["10-K", "10-Q"])
@@ -275,7 +249,6 @@ Parameters
 * `metadata_dest`: Directory to store metadata files
 * `skip_file`: If true, existing files will be skipped
 * `skip_metadata_file`: If true, existing metadata files will be skipped
-* `runnings_tests`: If true, only downloads one file
 * `clean_text`: function to clean text before writing to file
 * `primary_document`: if true only download the primary document (if it exists)
 """
@@ -289,23 +262,10 @@ function download_filings(
     metadata_dest::String="./metadata/",
     skip_file::Bool=true,
     skip_metadata_file::Bool=true,
-    running_tests::Bool=false,
     clean_text::Function=_pass_text,
     primary_document::Bool=false,
 )
-    current_date = Dates.now() - Dates.Day(1) #https://github.com/tylerjthomas9/ScrapeSEC.jl/issues/24
-    current_year = Dates.year(current_date)
-    current_quarter = Dates.quarterofyear(current_date)
-
-    if isnothing(end_year)
-        end_year = current_year
-    end
-
-    years = collect(start_year:end_year)
-    time_periods = [
-        (y, q) for y in years for
-        q in quarters if (q <= current_quarter || y < current_year) && (q > 2 || y > 1993)
-    ]
+    time_periods = _time_periods(start_year, end_year, quarters)
 
     download_metadata_files(
         start_year,
@@ -324,7 +284,6 @@ function download_filings(
             download_rate=download_rate,
             skip_file=skip_file,
             pbar_desc="Downloading $(t[1]) Q$(t[2]) Filings",
-            running_tests=running_tests,
             clean_text,
             primary_document,
         )
