@@ -21,6 +21,29 @@ end
     end
 end
 
+@testset "download_filing() (primary document fails, falls back to full filing)" begin
+    file_name = "edgar/data/880794/9999999997-05-050434.txt"
+    temp_file = "./temp_filing.txt"
+    FAIL_PRIMARY_DOCUMENTS[] = true
+    try
+        @test_logs (:warn, r"Failed to download primary document") download_filing(
+            file_name, temp_file, "./"; primary_document=true
+        )
+    finally
+        FAIL_PRIMARY_DOCUMENTS[] = false
+    end
+    @test occursin("TEST COMPANY A", read(temp_file, String))
+    rm(temp_file)
+end
+
+@testset "download_filings() (download_rate above limit)" begin
+    filenames = ["edgar/data/880794/9999999997-05-050434.txt"]
+    @test_logs (:warn, r"download_rate of 50 per second") download_filings(
+        filenames; dest="./temp/", download_rate=50
+    )
+    rm("./temp"; recursive=true, force=true)
+end
+
 @testset "download_filings() (only primary document)" begin
     rm("./temp"; recursive=true, force=true)
     rm("./metadata"; recursive=true, force=true)
@@ -30,7 +53,6 @@ end
         quarters=[3],
         dest="./temp/",
         metadata_dest="./metadata/",
-        running_tests=true,
         primary_document=true,
         skip_metadata_file=false,
     )
@@ -53,7 +75,6 @@ end
         quarters=[1],
         dest="./temp/",
         metadata_dest="./metadata/",
-        running_tests=true,
         skip_metadata_file=false,
     )
     @test isfile("./metadata/1994-QTR1.tsv")

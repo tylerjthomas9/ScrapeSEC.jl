@@ -27,3 +27,16 @@ end
     @test occursin("9999999997-05-050434.txt", lines[2])
     rm(temp_file)
 end
+
+@testset "_time_periods()" begin
+    @test ScrapeSEC._time_periods(1993, 1994, [1, 2, 3, 4]) ==
+        [(1993, 3), (1993, 4), (1994, 1), (1994, 2), (1994, 3), (1994, 4)]
+    @test ScrapeSEC._time_periods(2020, 2021, [2]) == [(2020, 2), (2021, 2)]
+
+    # end_year=nothing runs through the current year, and nothing past the current quarter
+    periods = ScrapeSEC._time_periods(2020, nothing, [1, 2, 3, 4])
+    @test first(periods) == (2020, 1)
+    @test last(periods)[1] ==
+        ScrapeSEC.Dates.year(ScrapeSEC.Dates.now() - ScrapeSEC.Dates.Day(1))
+    @test periods == ScrapeSEC._time_periods(2020, last(periods)[1] + 5, [1, 2, 3, 4])
+end

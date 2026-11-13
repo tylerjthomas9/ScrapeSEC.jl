@@ -6,6 +6,9 @@ using ZipFile: ZipFile
 
 const FIXTURES_DIR = joinpath(@__DIR__, "data", "fixtures")
 
+# Set to true to make primary document requests fail, to test the fallback
+const FAIL_PRIMARY_DOCUMENTS = Ref(false)
+
 # cik -> (filing text fixture, index html fixture)
 const FILING_FIXTURES = Dict(
     "880794" => ("880794_9999999997-05-050434.txt", "880794_index.html"),
@@ -54,6 +57,7 @@ function fixture_bytes(url::AbstractString)::String
                 return read(joinpath(FIXTURES_DIR, index_fixture), String)
         end
     elseif occursin(".htm", url)
+        FAIL_PRIMARY_DOCUMENTS[] && error("simulated failure for $url")
         # primary document request: any filing fixture works, pick by cik
         for (cik, (text_fixture, _)) in FILING_FIXTURES
             occursin("/$(cik)/", url) &&
